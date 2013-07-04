@@ -1,11 +1,19 @@
-/*
- * drm-service-core-sapps
- *
- * Copyright (c) 2000 - 2010 Samsung Electronics Co., Ltd. All rights reserved.
- *
- * Contact:Sunggun Jung	<sunggun.jung@samsung.com>
- * 
- */
+// Copyright (c) 2013 Samsung Electronics Co., Ltd.
+//
+// Licensed under the Flora License, Version 1.1 (the License);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://floralicense.org/license/
+
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an AS IS BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 
 #ifndef __DRM_OEM_SAPPS_H__
 #define __DRM_OEM_SAPPS_H__
@@ -16,30 +24,27 @@ extern "C" {
 
 #include <time.h>
 
-/* Return values from Samsung Apps DRM APIs */
- #define DRM_SAPPS_SUCCESS 0        /**<success */
- #define DRM_SAPPS_LIC_VALID 1       /**<License is valid */
- #define DRM_SAPPS_LIC_SUSPEND 2       /**<License is valid but for future use */
- 
- /* All the failure cases will have a negative value */   
- #define DRM_SAPPS_INVALID_ARG -1000      /**<invalid argument*/
- #define DRM_SAPPS_PARSING_ERROR -999      /**<parsing contents or rights error*/
- #define DRM_SAPPS_DB_ERROR -998        /**<data base error */
- #define DRM_SAPPS_INSUFFICIENT_MEMORY -997      /**<memory error */
- #define DRM_SAPPS_INTERNAL_ERROR -996      /**<processing error */
- #define DRM_SAPPS_FILE_ERROR -995       /**<file error */
+#define DRM_SAPPS_SUCCESS 0
+#define DRM_SAPPS_LIC_VALID 1
+#define DRM_SAPPS_LIC_SUSPEND 2
 
- /* License specific errors */
- #define DRM_SAPPS_LIC_EXPIRED_DATETIME -994     /**<Datetime License is expired */
- #define DRM_SAPPS_LIC_EXPIRED_COUNT -993     /**<Count License is expired */
- #define DRM_SAPPS_LIC_NO_LICENCE -992      /**<No License */
- #define DRM_SAPPS_LIC_IMEI_MISMATCH -991     /**<IMEI is mismatching */
- #define DRM_SAPPS_LIC_PNUM_MISMATCH -990     /**<PNUM is mismatching */
- 
- #define DRM_SAPPS_UNKNOWN_ERROR -1     /**<dummy error value */
+#define DRM_SAPPS_INVALID_ARG -1000
+#define DRM_SAPPS_PARSING_ERROR -999
+#define DRM_SAPPS_DB_ERROR -998
+#define DRM_SAPPS_INSUFFICIENT_MEMORY -997
+#define DRM_SAPPS_INTERNAL_ERROR -996
+#define DRM_SAPPS_FILE_ERROR -995
 
-/* License Information */
-typedef struct {
+#define DRM_SAPPS_LIC_EXPIRED_DATETIME -994
+#define DRM_SAPPS_LIC_EXPIRED_COUNT -993
+#define DRM_SAPPS_LIC_NO_LICENCE -992
+#define DRM_SAPPS_LIC_IMEI_MISMATCH -991
+#define DRM_SAPPS_LIC_PNUM_MISMATCH -990
+
+#define DRM_SAPPS_UNKNOWN_ERROR -1
+
+typedef struct
+{
 	unsigned int IsLicenseValid;  	/**<whether license is valid or not */
 	unsigned int OrgCount;   		/**<Original Count */
 	unsigned int CurCount;   		/**<Current Count */
@@ -52,11 +57,6 @@ typedef struct _drm_sapps_license_list{
 	struct _drm_sapps_license_list*   pnext;
 	drm_sapps_license_info    LicenseInfo;
 } drm_sapps_license_list;
-/**
-* @internal
-* @defgroup DRM-SAPPS drm-sapps
-* @{  
-*/
 
 /**   
  *  An application can request generate request for getting License.
