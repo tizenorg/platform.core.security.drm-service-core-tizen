@@ -1,0 +1,11 @@
+prefix=@PREFIX@
+exec_prefix=@EXEC_PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
+
+Name: drm-service-core-sapps
+Description: Samsung Apps DRM Package
+Version: @VERSION@
+Requires: dlog openssl db-util
+Libs: -L${libdir} -ldrm-service-core-sapps
+Cflags: -I${includedir}/drm-sapps

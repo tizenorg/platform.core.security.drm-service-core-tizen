@@ -1,0 +1,13 @@
+<manifest>
+	<define>
+		<domain name="drm-service-core-sapps" />
+	</define>
+	<request>
+		<domain name="drm-service-core-sapps" />
+	</request>
+	<assign>
+		<filesystem path="/usr/lib/libdrm-service-core-sapps.so" label="_" />
+		<filesystem path="/opt/apps/drm_test/drm_testsapps" label="_" />
+		<filesystem path="/usr/bin/drm_sapps_initialize" label="_" />
+	</assign>
+</manifest>
