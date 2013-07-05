@@ -1,0 +1,12 @@
+<manifest>
+	<define>
+		<domain name="drm-service-core-tizen" />
+	</define>
+	<request>
+		<domain name="drm-service-core-tizen" />
+	</request>
+	<assign>
+		<filesystem path="/usr/lib/libdrm-service-core-tizen.so" label="_" />
+		<filesystem path="/usr/bin/drm_tizen_initialize" label="_" />
+	</assign>
+</manifest>

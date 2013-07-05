@@ -1,11 +1,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-SET (this_target drm-service-core-sapps)
+SET (this_target drm-service-core-tizen)
 
-CONFIGURE_FILE(drm-service-core-sapps.pc.in ${CMAKE_SOURCE_DIR}/drm-service-core-sapps.pc @ONLY)
+CONFIGURE_FILE(drm-service-core-tizen.pc.in ${CMAKE_SOURCE_DIR}/drm-service-core-tizen.pc @ONLY)
 
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/drm-service-core-sapps.pc DESTINATION lib/pkgconfig)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/drm-service-core-tizen.pc DESTINATION lib/pkgconfig)
 
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION /usr/include/drm-sapps/ FILES_MATCHING PATTERN "*.h")
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION /usr/include/drm-tizen/ FILES_MATCHING PATTERN "*.h")
 
 IF("${ARCH}" MATCHES "arm")
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/lib/arm/ DESTINATION /usr/lib FILES_MATCHING PATTERN "*"
