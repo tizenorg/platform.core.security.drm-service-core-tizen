@@ -1,0 +1,37 @@
+<o-ex:rights xmlns:o-ex="http://odrl.net/1.1/ODRL-EX" xmlns:o-dd="http://odrl.net/1.1/ODRL-DD" xmlns:oma-dd="http://www.openmobilealliance.com/oma-dd" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" o-ex:id="SAD-RO2.0">
+ <o-ex:context>
+  <o-dd:version>2.0</o-dd:version>
+  <o-dd:uid>6ae9897f613140cedfd99879a11ecbcad56b7128345d0eb0b3e16fc4c0932573bf63aad6bfcffe9f162826f840b6c2aa575fe8a8c0bdf1cf0ebbe1a1043812da</o-dd:uid>
+ </o-ex:context>
+ <o-ex:agreement>
+  <o-ex:asset>
+   <o-ex:context>
+    <o-dd:uid>X5YVR2zmQZ-1.0.0</o-dd:uid>
+   </o-ex:context>
+   <ds:KeyInfo>
+    <xenc:EncryptedKey>
+     <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#kw-aes128"/>
+     <xenc:CipherData>
+      <xenc:CipherValue>UU/MkzJVSP+PKmxu7tBfkWVZ98SiTUeFqfaIqGNw9CU=</xenc:CipherValue>
+     </xenc:CipherData>
+    </xenc:EncryptedKey>
+   </ds:KeyInfo>
+  </o-ex:asset>
+  <o-ex:permission>
+   <o-dd:execute>
+    <o-ex:constraint>
+     <o-dd:individual>
+      <o-ex:context>
+       <o-dd:uid>IMEI:354706050048713</o-dd:uid>
+      </o-ex:context>
+     </o-dd:individual>
+    </o-ex:constraint>
+   </o-dd:execute>
+  </o-ex:permission>
+ </o-ex:agreement>
+ <certificateChain>
+  <certificate>MIICiDCCAfGgAwIBAgIGAT3uVWhhMA0GCSqGSIb3DQEBBQUAMIGEMQswCQYDVQQGEwJLUjEOMAwGA1UECAwFU3V3b24xDjAMBgNVBAcMBVN1d29uMRYwFAYDVQQKDA1UaXplbiBUZXN0IENBMSAwHgYDVQQLDBdUaXplbiBEZXZlbG9wZXIgVGVzdCBDQTEbMBkGA1UEAwwSVGl6ZW4gRGV2ZWxvcGVyIENBMB4XDTEzMDQwOTEwMjY0N1oXDTQwMDgyNTEwMjY0NlowgYkxCzAJBgNVBAYTAktSMREwDwYDVQQIDAhLeXVuZy1naTEOMAwGA1UEBwwFU3V3b24xEDAOBgNVBAoMB1NhbXN1bmcxDDAKBgNVBAsMA1NQRzEnMCUGCSqGSIb3DQEJARYYc3VuZ2d1bi5qdW5nQHNhbXN1bmcuY29tMQ4wDAYDVQQDDAVGdEFwcDCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAg43VXwzDa498f/+JiD38kDqiQ0Wx7/nEciwa2pktcna8KwSSUYIghExLZmQLBfudkxBpDeq+iEQzFm5QtSrH3KwJX6Da/PYTS3W7C4XdrbAWShPkSVyUp86P7u2Q+dwoAdPfqANm7DdTxQ4BUdtNtYcATQ9PHIu0Dk7OACBLb1kCAwEAATANBgkqhkiG9w0BAQUFAAOBgQCe9h4VRqMmU+7OH8BHJiIwnbdvfWnyGBjVQ4BrcybeTu6A2IgTibY4n6eelW2gFqxozI+fl5hW8wCRQNyDO2mef/WfopkJGbafpRv3eJfT2gKjJHRJEvaXutD3cPfvvOvzmMw0YijII3KhzIrbi3Fekg52nLkRZKHrqkQQvQfsOA==</certificate>
+  <certificate>MIICpzCCAhCgAwIBAgIJAKzDjmEF+1OXMA0GCSqGSIb3DQEBBQUAMIGTMQswCQYDVQQGEwJLUjEOMAwGA1UECAwFU3V3b24xDjAMBgNVBAcMBVN1d29uMRYwFAYDVQQKDA1UaXplbiBUZXN0IENBMSUwIwYDVQQLDBxUaXplbiBUZXN0IERldmVsb3BlciBSb290IENBMSUwIwYDVQQDDBxUaXplbiBUZXN0IERldmVsb3BlciBSb290IENBMB4XDTEyMTAyOTEzMDEyMloXDTIyMTAyNzEzMDEyMlowgYQxCzAJBgNVBAYTAktSMQ4wDAYDVQQIDAVTdXdvbjEOMAwGA1UEBwwFU3V3b24xFjAUBgNVBAoMDVRpemVuIFRlc3QgQ0ExIDAeBgNVBAsMF1RpemVuIERldmVsb3BlciBUZXN0IENBMRswGQYDVQQDDBJUaXplbiBEZXZlbG9wZXIgQ0EwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMyG0DSTHBgalQo1seDKxpCU61gji+QQlxQkPQOvBrmuF6Z90zFCprTtg2sRjTLCNoRd75+VCCHuKGcrD27t7hwAekusPrpzdsq5QoBMvNjGDM22lC45PJ4d86DEDY4erxeJ5aSQxqbfXK4pKe9NwxdkKuA8dTYZM1UcmhXs7YALAgMBAAGjEDAOMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEACbr/OPNMJ+Ejrxfm/YjCiRPpjJLnwXS2IDtitbxot6bEdZkZvOFXOC0Ca4GT+jtvOcSlU7tM3Mdd1MrKe1kkoVd1vhCV8V4CK3/DPj8aN3rxfMfQitA6XMDcxzhsyMWz56OdifX50dvS/G/ad+kGhNhOOEKSE8zUyEDCGwqkfXk=</certificate>
+ </certificateChain>
+ <signature>xkl49MqlUt2j6T0oqhy0loYOhFEaj2bdmYlswgIV3RwIYXRteu36vREItnvzta0KctjV4goj7/x4IhZ7nLeNBZfHRDUmtCgMAoWqIdo0FMIduF4PaIBgtlqGfTrMe5EsOTi/PKTMy4LbIUwvdJRldhR2iXtWyZEDAG6IYPvRSIE=</signature>
+</o-ex:rights>
