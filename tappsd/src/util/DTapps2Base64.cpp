@@ -94,7 +94,7 @@ int DTappsB64Decode(unsigned char* in, int in_size, unsigned char* out, int& out
  
 	for( i=j=k=0; i < in_size; i++ )
 	{
-	   if( in[i] > 128 )
+	   if( in[i] >= 128 )
 		  continue;
 	   c[j] = MAP[(unsigned char)in[i]];
 	   if( c[j] == 64 )
