@@ -699,6 +699,8 @@ int DTappsGetROInfo(const char* pszXML, T_RO *t_RO, unsigned char* name)
 	if (t_RO->t_Permission.t_Individual.DUID == NULL)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_MemCmp Error Code = %x", TADC_MEMAlOC_ERROR);
+		nResult = -2;
+		goto finish;
 	}
 
 	TADC_IF_MemSet(t_RO->t_Permission.t_Individual.DUID, 0, length + 1);
