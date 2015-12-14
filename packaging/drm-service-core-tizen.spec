@@ -14,7 +14,6 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(cryptsvc)
 BuildRequires:  pkgconfig(dukgenerator)
 BuildRequires:  pkgconfig(libtzplatform-config)
-Requires: pkgconfig(libtzplatform-config)
 
 %description
 Description: Tizen Application DRM library (Shared Object)
