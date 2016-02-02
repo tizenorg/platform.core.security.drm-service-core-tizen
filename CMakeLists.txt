@@ -44,7 +44,6 @@ pkg_check_modules(DRM_SERVICE_CORE_DEP
 	dlog
 	db-util
 	openssl
-    dukgenerator
     cryptsvc
     libtzplatform-config
 )
@@ -98,7 +97,6 @@ pkg_check_modules(DRM_INITIALIZE_DEP
 	dlog
 	db-util
 	openssl
-    dukgenerator
 #    cryptsvc
 )
 

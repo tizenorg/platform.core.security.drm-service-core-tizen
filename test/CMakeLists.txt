@@ -3,7 +3,6 @@ pkg_check_modules(DRM_TEST_DEP
 	dlog
 	db-util
 	openssl
-    dukgenerator
     cryptsvc
     libtzplatform-config
 )

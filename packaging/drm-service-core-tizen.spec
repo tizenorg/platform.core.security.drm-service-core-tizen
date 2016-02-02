@@ -12,7 +12,6 @@ BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(db-util)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(cryptsvc)
-BuildRequires:  pkgconfig(dukgenerator)
 BuildRequires:  pkgconfig(libtzplatform-config)
 
 %description
