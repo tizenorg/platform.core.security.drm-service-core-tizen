@@ -99,16 +99,20 @@ int DTappsInstallLicense(const char* declicbuffer)
 	unsigned char name[DTAPPS_NAME_SIZE] = {0, };
 	unsigned char nullCek[CEK_SIZE] = {0, };
 
-	char sql_query[2048] = {0, };
 	int len = 0;
 	time_t now = 0;
 	char time_buffer[21] = {0, };
-	T_RO t_RO = {0, };
+	T_RO t_RO;
+
+	memset(&t_RO, 0x00, sizeof(t_RO));
 
 	DTAPPS_RIGHTS_ROW row;
 
 #ifdef DTAPPS_STORE_CEK_IN_DB
-	AES_KEY key = {{0}};
+	AES_KEY key;
+
+	memset(&key, 0x00, sizeof(key));
+
 	unsigned char *encr_cek = NULL;
 	unsigned int keylen = 0;
 	unsigned int encr_cek_len = 0;
@@ -359,7 +363,7 @@ Error_Exit:
 
 int DTappsHasValidLicense(const char* szCid)
 {
-	int len = 0, const_buf_enclen = 0, hash_buf_enclen = 0, const_buf_declen = 0, hash_buf_declen = 0;
+	int const_buf_enclen = 0, hash_buf_enclen = 0, const_buf_declen = 0, hash_buf_declen = 0;
 
 	unsigned char *pDevKey = NULL;
 	unsigned int DevKeyLen = 0;
@@ -484,7 +488,6 @@ int DTappsGetROInfo(const char* pszXML, T_RO *t_RO, unsigned char* name)
 	CPointerArray	paChilds;
 	LPCTSTR			pszValue;
 	int				length = 0;
-	TADC_U8			TempVersion[3] = {0};
 	unsigned char	*pbBuffer = NULL;
 	int len_enc = 0, len_dec = 0;
 
@@ -731,7 +734,6 @@ finish:
 
 BOOL DTappsGetCEK(const char* szCid, T_RO* t_RO)
 {
-	char sql_query[2048] = {0, };
 	int db_buf_enclen = 0, hash_buf_enclen = 0, db_buf_declen = 0, hash_buf_declen = 0;
 	DTAPPS_RIGHTS_ROW row;
 	BOOL check = FALSE;
@@ -749,7 +751,9 @@ BOOL DTappsGetCEK(const char* szCid, T_RO* t_RO)
 	int check_valid = TADC_LICENSE_VALID;
 	DTAPPS_CONSTRAINTS st_constaints = {0, };
 
-	AES_KEY key = {{0}};
+	AES_KEY key;
+
+	memset(&key, 0x00, sizeof(key));
 
 	if (NULL == szCid || NULL == t_RO)
 	{

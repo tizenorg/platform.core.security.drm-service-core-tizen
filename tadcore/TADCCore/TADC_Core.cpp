@@ -15,8 +15,8 @@
  */
 
 /**
- * @file	TADC_Core.cpp
- * @brief	This file includes implementations of the Tizen Apps DRM Core APIs.
+ * @file    TADC_Core.cpp
+ * @brief   This file includes implementations of the Tizen Apps DRM Core APIs.
 */
 
 #include "drm-tizen-error.h"
@@ -25,22 +25,20 @@
 #include "TADC_IF.h"
 #include "TADC_ErrorCode.h"
 
-static BYTE g_baSignatureKey[ 32 ] =
-{
-	0x29, 0x2b, 0xf2, 0x29, 0x1f, 0x8b, 0x47, 0x81, 0x95, 0xa, 0x84, 0xf8, 0x91, 0xda, 0x7, 0xd0,
+static BYTE g_baSignatureKey[32] = {
+	0x29, 0x2b, 0xf2, 0x29, 0x1f, 0x8b, 0x47, 0x81, 0x95, 0x0a, 0x84, 0xf8, 0x91, 0xda, 0x07, 0xd0,
 	0x9c, 0xde, 0x32, 0x3e, 0x9e, 0x46, 0x4a, 0xfc, 0xa4, 0xcc, 0x55, 0x6e, 0xf2, 0x81, 0x61, 0xdb
 };
 
-static BYTE	g_baAESKey[ 32 ] =
-{
-	-8, -121, 10, -59, -45, 109, 68, 73, 3, -97, -67, 30, -88, 47, -10,
-	-61, -33, 59, 2, 19, 88, 27, 18, 48, 28, -41, -83, -91, 31, 93, 1, 51
+static BYTE g_baAESKey[32] = {
+	0xf8, 0x87, 0x0a, 0xc5, 0xd3, 0x6d, 0x44, 0x49, 0x03, 0x9f, 0xbd, 0x1e, 0xa8, 0x2f, 0xf6, 0xc3,
+	0xdf, 0x3b, 0x02, 0x13, 0x58, 0x1b, 0x12, 0x30, 0x1c, 0xd7, 0xad, 0xa5, 0x1f, 0x5d, 0x01, 0x33
 };
 
 //Error Code
 static DWORD g_TADCErrorCode = 0;
 
-int	TADC_SetDeviceInfo(T_DEVICE_INFO *t_DeviceInfo)
+int TADC_SetDeviceInfo(T_DEVICE_INFO *t_DeviceInfo)
 {
 	int nResult = 0;
 
@@ -53,11 +51,11 @@ int	TADC_SetDeviceInfo(T_DEVICE_INFO *t_DeviceInfo)
 	return nResult;
 }
 
-int	TADC_MakeRequestLicense( T_DEVICE_INFO *t_DeviceInfo,
-							 T_FILE_HEADER *t_FileHeader,
-							 T_DRM_HEADER *t_DRMHeader,
-							 unsigned char * outBuffer,
-                             size_t outBufferSize)
+int TADC_MakeRequestLicense(T_DEVICE_INFO *t_DeviceInfo,
+							T_FILE_HEADER *t_FileHeader,
+							T_DRM_HEADER *t_DRMHeader,
+							unsigned char * outBuffer,
+							size_t outBufferSize)
 {
 	int nResult = 0;
 	size_t length = 0;
@@ -79,7 +77,7 @@ int	TADC_MakeRequestLicense( T_DEVICE_INFO *t_DeviceInfo,
 
 	snprintf(
 		(char*)outBuffer + length,
-        outBufferSize - length,
+		outBufferSize - length,
 		"<ContentInfo>\n<DRMType>%d</DRMType>\n<sid>%s</sid>\n<cid>%s</cid>\n</ContentInfo>\n</request>",
 			t_FileHeader->DRMType,
 			t_DRMHeader->SID,
@@ -92,12 +90,12 @@ int	TADC_MakeRequestLicense( T_DEVICE_INFO *t_DeviceInfo,
 	return nResult;
 }
 
-int	TADC_GetROAcqInfo(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo)
+int TADC_GetROAcqInfo(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo)
 {
-	int	nResult = -1;
-	int	i = 0, j = 0;
-	int	nSize = 0;
-	int	length = 0;
+	int nResult = -1;
+	int i = 0, j = 0;
+	int nSize = 0;
+	int length = 0;
 
 	//Check Param buffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -184,23 +182,23 @@ int	TADC_GetROAcqInfo(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo)
 	return nResult;
 }
 
-int	TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, size_t outBufferSize, unsigned char * ROVer)
+int TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, size_t outBufferSize, unsigned char * ROVer)
 {
-	BYTE		sha1_tmp[20];
-	TADC_U8		*ReqTemp;
-	LPSTR		psz64Parameter = NULL;
+	BYTE sha1_tmp[20];
+	TADC_U8* ReqTemp;
+	LPSTR psz64Parameter = NULL;
 
-	TADC_U8		key[16];
-	TADC_U8		iv[16];
+	TADC_U8 key[16];
+	TADC_U8 iv[16];
 
-	int			outlen = 0;
-	int			nResult = 0;
+	int outlen = 0;
+	int nResult = 0;
 
-	size_t		StrSize = 0;
-	size_t		len = 0;
-	size_t		i = 0;
-	size_t		k = 0;
-	size_t		reqdataset_size = 0;
+	size_t StrSize = 0;
+	size_t len = 0;
+	size_t i = 0;
+	long k = 0;
+	size_t reqdataset_size = 0;
 
 	// Debug
 	DRM_TAPPS_LOG("Debug Log == TADC_MakeRequestRO  : Start    \n");
@@ -296,7 +294,7 @@ int	TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, siz
 
 	TADC_IF_MemCpy(key, &g_baAESKey[0], 16);
 	TADC_IF_MemCpy(iv, &g_baAESKey[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
 
 	// Debug
 	DRM_TAPPS_LOG("Debug Log == TADC_MakeRequestRO  : After TADC_IF_AES_CTR  \n");
@@ -336,12 +334,12 @@ int	TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, siz
 	return len;
 }
 
-int	TADC_GetHashReqID(unsigned char * inBuffer, unsigned char *hashReqID)
+int TADC_GetHashReqID(unsigned char * inBuffer, unsigned char *hashReqID)
 {
-	int		i = 0, j = 0, nSize = 0;
-	char	tmpbuf[512];
-	int		length = 0;
-	int 	nResult = 0;
+	int i = 0, j = 0, nSize = 0;
+	char tmpbuf[512];
+	int length = 0;
+	int nResult = 0;
 
 	//Check Param Buffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -414,41 +412,37 @@ int	TADC_GetHashReqID(unsigned char * inBuffer, unsigned char *hashReqID)
 	return 0;
 }
 
-int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO *t_RO, unsigned char *outBuffer)
+int TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO *t_RO, unsigned char *outBuffer)
 {
-	int			nHMacSize = 28;	// Base64 Enc length of SHA1 20byte
-	TADC_U8		sha1_tmp[20] = {0, };
-	char		hmacBuf[512] = {0, };
-	BYTE 		*ReqTemp = NULL;
-	LPBYTE		pbBuffer = NULL;
+	int nHMacSize = 28; // Base64 Enc length of SHA1 20byte
+	TADC_U8 sha1_tmp[20] = {0, };
+	char hmacBuf[512] = {0, };
+	BYTE *ReqTemp = NULL;
+	LPBYTE pbBuffer = NULL;
 
-	TADC_U8		key[16] = {0, };
-	TADC_U8		iv[16] = {0, };
+	TADC_U8 key[16] = {0, };
+	TADC_U8 iv[16] = {0, };
 
-	int			outlen = 0;
+	int outlen = 0;
 
-	char		*License = NULL;
-	TCHAR		tmpDH_B[DHKey_SIZE * 2 + 1] = {0, };
+	char *License = NULL;
+	TCHAR tmpDH_B[DHKey_SIZE * 2 + 1] = {0, };
 
 	// RO XML Parser
-	CXMLFile			XMLParser;
-	CPointerArray		paChilds;
+	CXMLFile XMLParser;
+	CPointerArray paChilds;
 
 	//2011.03.08
-	char			*timeStamp = NULL;
-	int				retLen = 0;
-	int				i = 0, j = 0;
-	int				nSize = 0;
-	int				length = 0;
-	int				req_length = 0;
-	int				nResult = 0;
+	char *timeStamp = NULL;
+	int retLen = 0;
+	int i = 0, j = 0;
+	int nSize = 0;
+	int length = 0;
+	int req_length = 0;
+	int nResult = 0;
 
 	char pRoHeader[36] = {'<', '?', 'x', 'm', 'l', ' ', 'v', 'e', 'r', 's', 'i', 'o', 'n', '=', '"', '1', '.', '0', '"', '?', '>', 0x0A,
 						'<', 'T', 'i', 'z', 'e', 'n', 'L', 'i', 'c', 'e', 'n', 's', 'e', '>'};
-
-	// test code
-	FILE *fd = NULL;
-	char tmpPath[128] = {0, };
 
 	//Check Param Buffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -529,7 +523,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 
 	TADC_IF_MemCpy(key, &g_baAESKey[0], 16 );
 	TADC_IF_MemCpy(iv, &g_baAESKey[16], 16 );
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	TADC_IF_SHA1(ReqTemp, req_length, sha1_tmp);
 	if (ReqTemp != NULL)
@@ -633,7 +627,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 	// Decrypt License
 	TADC_IF_MemCpy(key, &t_ROAcqInfo->t_DHInfo.K[0], 16);
 	TADC_IF_MemCpy(iv, &t_ROAcqInfo->t_DHInfo.K[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	// Test Code for get the plaintext ro
 	/*
@@ -721,7 +715,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 	// Decrypt timeStamp
 	TADC_IF_MemCpy(key, &t_ROAcqInfo->t_DHInfo.K[0], 16);
 	TADC_IF_MemCpy(iv, &t_ROAcqInfo->t_DHInfo.K[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	if (length >= (int)sizeof(t_ROAcqInfo->sTimeStamp))
 	{
@@ -743,8 +737,8 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 
 int TADC_VerifyROSignature(IN LPBYTE pszXML)
 {
-	int			nResult = 0;
-	int			length = 0, i = 0, i2 = 0;
+	int nResult = 0;
+	int length = 0, i = 0, i2 = 0;
 
 	unsigned char* pSigData = NULL;
 	unsigned char* pRICert = NULL;
@@ -774,16 +768,16 @@ int TADC_VerifyROSignature(IN LPBYTE pszXML)
 	i = FindString(pszXML, TADC_IF_StrLen((char*)pszXML), (LPBYTE)"<CertificateChain>", 18);
 	IF_TRUE_RETURN(i < 0, TADC_RO_CERTIFICATE_ERROR);
 
-	p = pszXML + i;		// <certificateChain>
+	p = pszXML + i; // <certificateChain>
 	length = TADC_IF_StrLen((char*)pszXML) - i;
 
 	i = FindString(p, length, (LPBYTE)"<Certificate>", 13);
 	IF_TRUE_RETURN(i < 0, TADC_RO_CERTIFICATE_ERROR);
-	i += 13;	// start position of RI Cert
+	i += 13; // start position of RI Cert
 
 	i2 = FindString(p, length, (LPBYTE)"</Certificate>", 14);
 	IF_TRUE_RETURN(i2 < (i + 13), TADC_RO_CERTIFICATE_ERROR);
-	certLen = i2 - i;	// size of RI Cert
+	certLen = i2 - i; // size of RI Cert
 
 	TADC_IF_StrNCpy(TempBuf, (char*)p+i, certLen);
 
@@ -792,16 +786,16 @@ int TADC_VerifyROSignature(IN LPBYTE pszXML)
 	TADC_IF_MemSet(TempBuf, 0x00, CERT_MAXSIZE);
 
 	//Get Certificates ( RICA Cert )
-	p = p + (i2 + 14);	// first </certificate>
+	p = p + (i2 + 14); // first </certificate>
 	length = length - (i2 + 14);
 
 	i = FindString(p, length, (LPBYTE)"<Certificate>", 13);
 	IF_TRUE_RETURN2(i < 0, TADC_IF_Free(pRICert),,,TADC_RO_CERTIFICATE_ERROR);
-	i += 13;	// start position of RICA Cert
+	i += 13; // start position of RICA Cert
 
 	i2 = FindString(p, length, (LPBYTE)"</Certificate>", 14);
 	IF_TRUE_RETURN2(i2 < (i + 13), TADC_IF_Free(pRICert),,,TADC_RO_CERTIFICATE_ERROR);
-	certLen2 = i2 - i;	// size of RICA Cert
+	certLen2 = i2 - i; // size of RICA Cert
 
 	TADC_IF_StrNCpy(TempBuf, (char*)p + i, certLen2);
 
@@ -820,11 +814,11 @@ int TADC_VerifyROSignature(IN LPBYTE pszXML)
 
 	i = FindString(p, length, (LPBYTE)"<SignatureValue>", 16);
 	IF_TRUE_RETURN2(i < 0, TADC_IF_Free(pRICert),TADC_IF_Free(pRICACert),,TADC_RO_SIGNATURE_ERROR);
-	i += 16;	// start position of signature value
+	i += 16; // start position of signature value
 
 	i2 = FindString(p, length, (LPBYTE)"</SignatureValue>", 17);
 	IF_TRUE_RETURN2(i2 < (i + 16), TADC_IF_Free(pRICert),TADC_IF_Free(pRICACert),,TADC_RO_SIGNATURE_ERROR);
-	sigLen = i2 - i;	// size of signature value
+	sigLen = i2 - i; // size of signature value
 
 	TADC_IF_StrNCpy(TempBuf, (char*)p + i, sigLen);
 
@@ -848,14 +842,14 @@ int TADC_VerifyROSignature(IN LPBYTE pszXML)
 
 int TADC_GetResponseROInfo(IN LPBYTE pszXML,  T_RO *t_RO)
 {
-	int					nResult = 0;
-	CXMLFile			oXMLFile;
-	CXMLElement*		pRoot, *pElement;
-	CPointerArray		paChilds;
-	LPCTSTR				pszValue;
-	LPBYTE				pbBuffer = NULL;
-	int					length = 0;
-	TADC_U8				TempVersion[3] = {0, };
+	int nResult = 0;
+	CXMLFile oXMLFile;
+	CXMLElement* pRoot, *pElement;
+	CPointerArray paChilds;
+	LPCTSTR pszValue;
+	LPBYTE pbBuffer = NULL;
+	int length = 0;
+	TADC_U8 TempVersion[3] = {0, };
 
 	char pRoHeader[36] = {'<', '?', 'x', 'm', 'l', ' ', 'v', 'e', 'r', 's', 'i', 'o', 'n', '=', '"', '1', '.', '0', '"', '?', '>', 0x0A,
 						'<', 'T', 'i', 'z', 'e', 'n', 'L', 'i', 'c', 'e', 'n', 's', 'e', '>'};
@@ -932,9 +926,9 @@ int TADC_GetResponseROInfo(IN LPBYTE pszXML,  T_RO *t_RO)
 		goto finish;
 	}
 
-	t_RO->t_Content.CID = (TADC_U8*)TADC_IF_Malloc(length + 1);	//2011.03.08 ( CID_SIZE -> length )
+	t_RO->t_Content.CID = (TADC_U8*)TADC_IF_Malloc(length + 1); //2011.03.08 ( CID_SIZE -> length )
 	IF_TRUE_GOTO(t_RO->t_Content.CID == NULL, -2);
-	TADC_IF_MemSet(t_RO->t_Content.CID, 0, length + 1);			//2011.03.08 ( CID_SIZE -> length )
+	TADC_IF_MemSet(t_RO->t_Content.CID, 0, length + 1); //2011.03.08 ( CID_SIZE -> length )
 	TADC_IF_StrNCpy((CHAR*)t_RO->t_Content.CID, pszValue, length);
 
 	// Get KeyValue (CEK)
@@ -966,9 +960,9 @@ int TADC_GetResponseROInfo(IN LPBYTE pszXML,  T_RO *t_RO)
 		goto finish;
 	}
 
-	t_RO->t_Content.CEK = (TADC_U8*)TADC_IF_Malloc(length + 1);	//2011.03.08 ( CEK_SIZE -> length )
+	t_RO->t_Content.CEK = (TADC_U8*)TADC_IF_Malloc(length + 1); //2011.03.08 ( CEK_SIZE -> length )
 	IF_TRUE_GOTO(t_RO->t_Content.CEK == NULL, -2);
-	TADC_IF_MemSet(t_RO->t_Content.CEK, 0, length + 1);			//2011.03.08 ( CEK_SIZE -> length )
+	TADC_IF_MemSet(t_RO->t_Content.CEK, 0, length + 1); //2011.03.08 ( CEK_SIZE -> length )
 	TADC_IF_MemCpy(t_RO->t_Content.CEK, pbBuffer, length);
 
 	TADC_IF_Free(pbBuffer);
@@ -1028,11 +1022,11 @@ finish:
 	return nResult;
 }
 
-int	TADC_GetFileHeader(unsigned char * inBuffer,  T_FILE_HEADER *t_FileHeader)
+int TADC_GetFileHeader(unsigned char * inBuffer,  T_FILE_HEADER *t_FileHeader)
 {
-	int		i = 0;
-	BYTE 	FixedFileType[8] = {0x00,0x00,0x00,0x14,0x66,0x74,0x79,0x70};
-	char	tmp[2];
+	int i = 0;
+	BYTE FixedFileType[8] = {0x00,0x00,0x00,0x14,0x66,0x74,0x79,0x70};
+	char tmp[2];
 
 	//Check Param Bufffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -1113,9 +1107,9 @@ int	TADC_GetFileHeader(unsigned char * inBuffer,  T_FILE_HEADER *t_FileHeader)
 	return 0;
 }
 
-int	TADC_GetDRMHeader(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
+int TADC_GetDRMHeader(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 {
-	int		i = 0;
+	int i = 0;
 
 	//Check Param Bufffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -1143,22 +1137,22 @@ int	TADC_GetDRMHeader(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 	return 0;
 }
 
-int	TADC_GetDRMHeaderInfo(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
+int TADC_GetDRMHeaderInfo(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 {
-	int				nResult = 0;
-	CXMLFile		oXMLFile;
-	CXMLElement*	pRoot, *pNode;
-	CPointerArray	paChilds;
-	LPCTSTR			pszValue;
+	int nResult = 0;
+	CXMLFile oXMLFile;
+	CXMLElement* pRoot, *pNode;
+	CPointerArray paChilds;
+	LPCTSTR pszValue;
 
-	BYTE			sha1_tmp[20];
-	unsigned char	*ReqTemp=NULL;
+	BYTE sha1_tmp[20];
+	unsigned char *ReqTemp=NULL;
 
-	TADC_U8			key[16];
-	TADC_U8			iv[16];
+	TADC_U8 key[16];
+	TADC_U8 iv[16];
 
-	int				outlen=0;
-	long			Length=0;
+	int outlen=0;
+	long Length=0;
 
 	//Check Param
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
@@ -1184,7 +1178,7 @@ int	TADC_GetDRMHeaderInfo(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 
 	TADC_IF_MemCpy(key, &g_baSignatureKey[0], 16);
 	TADC_IF_MemCpy(iv, &g_baSignatureKey[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
 
 	if (TADC_IF_MemCmp(sha1_tmp, inBuffer, sizeof(sha1_tmp)))
 	{
@@ -1237,14 +1231,14 @@ int	TADC_GetDRMHeaderInfo(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 		{
 			pNode = (CXMLElement*)paChilds.Get(0);
 			pszValue = pNode->GetValue();
-			Length = TADC_IF_StrLen((char*)pszValue);						//2011.03.08
+			Length = TADC_IF_StrLen((char*)pszValue); //2011.03.08
 
 			if (Length > 0)
 			{
-				t_DRMHeader->CID = (TADC_U8*)TADC_IF_Malloc(Length + 1);		//2011.03.08 ( CID_SIZE -> Length )
+				t_DRMHeader->CID = (TADC_U8*)TADC_IF_Malloc(Length + 1); //2011.03.08 ( CID_SIZE -> Length )
 				IF_TRUE_RETURN(t_DRMHeader->CID == NULL, TADC_MEMAlOC_ERROR);
-				TADC_IF_MemSet(t_DRMHeader->CID, 0, Length + 1);				//2011.03.08 ( CID_SIZE -> Length )
-				TADC_IF_StrNCpy((CHAR*)t_DRMHeader->CID, pszValue, Length);	//2011.03.08 ( CID_SIZE -> Length )
+				TADC_IF_MemSet(t_DRMHeader->CID, 0, Length + 1); //2011.03.08 ( CID_SIZE -> Length )
+				TADC_IF_StrNCpy((CHAR*)t_DRMHeader->CID, pszValue, Length); //2011.03.08 ( CID_SIZE -> Length )
 			}
 		}
 	}
@@ -1395,9 +1389,9 @@ finish:
 	return nResult;
 }
 
-int	TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHeader)
+int TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHeader)
 {
-	int	length1 = 0;
+	int length1 = 0;
 
 	//Check Parameter Buffer
 	IF_TRUE_RETURN(t_DeviceInfo == NULL, TADC_PARAMETER_ERROR);
@@ -1406,7 +1400,7 @@ int	TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHe
 	IF_TRUE_RETURN(t_RODB == NULL, TADC_PARAMETER_ERROR);
 	IF_TRUE_RETURN(t_RODB->t_Content.CID == NULL, TADC_PARAMETER_ERROR);
 
-	if(!TADC_IF_StrCmp((char*)t_DRMHeader->CID, (char*)t_RODB->t_Content.CID))	//2011.03.08 ( TADC_IF_MemCmp -> TADC_IF_StrCmp )
+	if(!TADC_IF_StrCmp((char*)t_DRMHeader->CID, (char*)t_RODB->t_Content.CID)) //2011.03.08 ( TADC_IF_MemCmp -> TADC_IF_StrCmp )
 	{
 		if((t_RODB->PerFlag & DUID_RULE) && (t_RODB->t_Permission.t_Individual.BindingType & DUID_RULE))
 		{
@@ -1436,18 +1430,18 @@ int	TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHe
 
 int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
 {
-	TADC_U8		key[16] = {0, };
-	TADC_U8		iv[16] = {0, };
-	int    		i = 0, nBlocks = 0, nIndex = 0;
-	char   		baToBeEncrypted[32] = {0, };
-	int    		nRemainBytes = 0, nBlockBytes = 0;
+	TADC_U8 key[16] = {0, };
+	TADC_U8 iv[16] = {0, };
+	int i = 0, nBlocks = 0, nIndex = 0;
+	char baToBeEncrypted[32] = {0, };
+	int nRemainBytes = 0, nBlockBytes = 0;
 
-	int 		nEncryptionLevel = 0;
-	int			nEncryptionMethod = 0;
+	int nEncryptionLevel = 0;
+	int nEncryptionMethod = 0;
 
-	char		temp[512] = {0, };
-	int			length = 0;
-	int			totlength = 0;
+	char temp[512] = {0, };
+	int length = 0;
+	int totlength = 0;
 
 	TADC_IF_MemSet(temp, 0, sizeof(temp));
 
@@ -1489,7 +1483,7 @@ int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
 	nRemainBytes = nSize;
 	nBlockBytes = 16;
 
-	length    = 0;
+	length = 0;
 	totlength = 0;
 
 	for (i = 0 ; i < 32 ; i++)
@@ -1516,12 +1510,12 @@ int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
 
 	TADC_IF_MemCpy(key, &t_DRMHeader->CEK[0], 16);
 	TADC_IF_MemCpy(iv, &t_DRMHeader->CEK[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)temp, &length, (unsigned char*)temp);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)temp, &length, (unsigned char*)temp);
 
 	nRemainBytes = nSize;
 	nBlockBytes = 16;
 
-	length    = 0;
+	length = 0;
 	totlength = 0;
 
 	for (i = 0 ; i < 32 ; i++)
@@ -1548,16 +1542,16 @@ int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
 	return 0;
 }
 
-int	TADC_GetDRMHeaderFromFile(const char *pTADCFilepath, T_FILE_HEADER *t_FileHeader, T_DRM_HEADER *t_DRMHeader )
+int TADC_GetDRMHeaderFromFile(const char *pTADCFilepath, T_FILE_HEADER *t_FileHeader, T_DRM_HEADER *t_DRMHeader )
 {
 
 	unsigned char tempbuf[512];
 	unsigned char *pbuf = NULL;
 
-	int		ret=0;
-	ULONG	readsize=0, ReadLen=0;
+	int ret=0;
+	ULONG readsize=0, ReadLen=0;
 
-	FILE *	hFile =  0;		//Apps drm file
+	FILE *hFile =  0; //Apps drm file
 
 	//null check
 	if (pTADCFilepath == NULL || t_FileHeader == NULL || t_DRMHeader == NULL)
@@ -1640,8 +1634,8 @@ int	TADC_GetDRMHeaderFromFile(const char *pTADCFilepath, T_FILE_HEADER *t_FileHe
 
 DWORD TADC_GetLastError(void)
 {
-	DWORD	dwError	= g_TADCErrorCode;
-	g_TADCErrorCode	= 0;
+	DWORD dwError = g_TADCErrorCode;
+	g_TADCErrorCode = 0;
 
 	return dwError;
 }
