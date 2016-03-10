@@ -81,14 +81,13 @@ int _drm_tapps_register_license(const char *pRespBuf, unsigned int respBufLen);
 int _drm_tapps_decrypt_package(const char *pTADCFilepath, int stadFileLen, const char *pDecryptedFile, int decryptedFileLen);
 int _drm_tapps_is_drm_file(const char *pDcfPath, int dcfPathLen);
 
-EXPORT_API int drm_tizen_generate_license_request
-(
-	const char *pRespBuf, 			//Response Data String of the Purchase Request ( Null terminator string )
-	unsigned int respBufLen,			//pResBuf Length
-	char *pReqBuf, 				//License Request Data
-	unsigned int *pReqBufLen,		//IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
-	char *pLicenseUrl, 			//License Acquisition URL Data
-	unsigned int *pLicenseUrlLen	//IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
+EXPORT_API int drm_tizen_generate_license_request(
+	const char *pRespBuf,        //Response Data String of the Purchase Request ( Null terminator string )
+	unsigned int respBufLen,     //pResBuf Length
+	char *pReqBuf,               //License Request Data
+	unsigned int *pReqBufLen,    //IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
+	char *pLicenseUrl,           //License Acquisition URL Data
+	unsigned int *pLicenseUrlLen //IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
 )
 {
 	int ret = TADC_SUCCESS;
@@ -112,14 +111,13 @@ EXPORT_API int drm_tizen_generate_license_request
 	return ret;
 }
 
-int _drm_tapps_generate_license_request
-(
-	const char *pRespBuf, 		//Response Data String of the Purchase Request ( Null terminator string )
-	unsigned int respBufLen,	//pResBuf Length
-	char *pReqBuf, 				//License Request Data
-	unsigned int *pReqBufLen,	//IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
-	char *pLicenseUrl, 			//License Acquisition URL Data
-	unsigned int *pLicenseUrlLen//IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
+int _drm_tapps_generate_license_request(
+	const char *pRespBuf,        //Response Data String of the Purchase Request ( Null terminator string )
+	unsigned int respBufLen,     //pResBuf Length
+	char *pReqBuf,               //License Request Data
+	unsigned int *pReqBufLen,    //IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
+	char *pLicenseUrl,           //License Acquisition URL Data
+	unsigned int *pLicenseUrlLen //IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
 )
 {
 	int ret = TADC_SUCCESS;
@@ -170,11 +168,7 @@ EXPORT_API int drm_tizen_register_license
 	return ret;
 }
 
-int _drm_tapps_register_license
-(
-	const char *pRespBuf, 				//Response Data String of the Rights Request ( Null terminator string )
-	unsigned int respBufLen				//pResBuf Length
-)
+int _drm_tapps_register_license(const char *pRespBuf, unsigned int respBufLen)
 {
 	DRM_TAPPS_API_TIME()
 
@@ -310,10 +304,13 @@ int _drm_tapps_decrypt_package
 	DRM_TAPPS_API_TIME()
 
 	bool bRet = true;
-	int	ret = TADC_SUCCESS;
+	int ret = TADC_SUCCESS;
 
-	T_RO   t_RO = {0,};
-	DrmTdcFileHeader fileHeader = {{0}};
+	T_RO t_RO;
+	DrmTdcFileHeader fileHeader;
+
+	memset(&t_RO, 0x00, sizeof(t_RO));
+	memset(&fileHeader, 0x00, sizeof(fileHeader));
 
 	DRM_TAPPS_LOG("%s starts", __func__);
 	if (pTADCFilepath == NULL || pDecryptedFile == NULL)

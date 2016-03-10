@@ -32,6 +32,11 @@ SET(CMAKE_CXX_FLAGS_CCOV       "-g -std=c++0x -O2 --coverage")
 
 ADD_DEFINITIONS("-fPIC")
 
+# Set compiler warning flags
+ADD_DEFINITIONS("-Werror")                      # Make all warnings into errors.
+ADD_DEFINITIONS("-Wall")                        # Generate all warnings
+ADD_DEFINITIONS("-Wextra")                      # Generate even more extra warnings
+
 INCLUDE_DIRECTORIES(
     SYSTEM
     ${CMAKE_CURRENT_SOURCE_DIR}/tadcore/include
