@@ -126,11 +126,11 @@ int TADC_IF_GetDHKey(T_DH_INFO *t_dhinfo)
 
 int TADC_IF_GetDHKey_K(T_DH_INFO *t_dhinfo)
 {
-	DH 		*pDH = NULL;
-	BIGNUM  *pPubKey = NULL;
+	DH *pDH = NULL;
+	BIGNUM *pPubKey = NULL;
 
-	char	tempbuf[DHKey_SIZE + 1];
-	int		i = 0;
+	char tempbuf[DHKey_SIZE + 1];
+	int i = 0;
 
 	unsigned char tempG[1];
 
@@ -173,12 +173,13 @@ int TADC_IF_GetDHKey_K(T_DH_INFO *t_dhinfo)
 	return 0;
 }
 
-int TADC_IF_AES_CTR(int keyLen, unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out)
+/* Only handles 128 bit aes key */
+int TADC_IF_AES_CTR(unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out)
 {
-	AES_KEY 	stKey;
-	UINT		num;
-	TADC_U8 	ecount[16];
-	TADC_U8 	chain[16];
+	AES_KEY stKey;
+	UINT num;
+	TADC_U8 ecount[16];
+	TADC_U8 chain[16];
 
 	AES_set_encrypt_key(pKey, 128, &stKey);
 
@@ -197,7 +198,7 @@ int TADC_IF_AES_CTR(int keyLen, unsigned char *pKey, int ivLen, unsigned char *p
 
 int TADC_IF_SHA1(unsigned char *in, int inLen, unsigned char *out)
 {
-	SHA_CTX		AlgInfo;
+	SHA_CTX AlgInfo;
 
 	SHA1_Init(&AlgInfo);
 	SHA1_Update(&AlgInfo, in, inLen);
@@ -206,16 +207,16 @@ int TADC_IF_SHA1(unsigned char *in, int inLen, unsigned char *out)
 	return 0;
 }
 
-int TADC_IF_VerifySignature( unsigned char* inData, int inLen,
-							 unsigned char* sigData, int sigLen,
-							 unsigned char* cert, int certLen )
+int TADC_IF_VerifySignature(unsigned char* inData, int inLen,
+							unsigned char* sigData, int sigLen,
+							unsigned char* cert, int certLen)
 {
-	unsigned char	hashValue[20];
-	int				iRet = 0;
+	unsigned char hashValue[20];
+	int iRet = 0;
 
-	X509*			pX509 = NULL;
-	EVP_PKEY*		pKey = NULL;
-	RSA*			pRsa = NULL;
+	X509* pX509 = NULL;
+	EVP_PKEY* pKey = NULL;
+	RSA* pRsa = NULL;
 
 	//Check parameters
 	if (inData == NULL || sigData == NULL || cert == NULL || inLen < 1 || sigLen < 1 || certLen < 1)
@@ -237,7 +238,7 @@ int TADC_IF_VerifySignature( unsigned char* inData, int inLen,
 		return -1;
 	}
 
-    pKey = X509_get_pubkey(pX509);
+	pKey = X509_get_pubkey(pX509);
 	if (pKey == NULL)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifySignature Error : X509_get_pubkey!");
@@ -250,7 +251,7 @@ int TADC_IF_VerifySignature( unsigned char* inData, int inLen,
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifySignature Error : EVP_PKEY_get1_RSA!");
 		if (NULL != pKey)
 		{
-			 EVP_PKEY_free(pKey);
+			EVP_PKEY_free(pKey);
 		}
 		return -1;
 	}
@@ -303,138 +304,138 @@ int AddCertUntrustedCerts(STACK_OF(X509)* untrustedCerts, unsigned char* cert, i
 		return -1;
 	}
 
-    sk_X509_push(untrustedCerts, pstX509);
+	sk_X509_push(untrustedCerts, pstX509);
 
 	return 0;
 }
 
 int AddCertSTOREFromFile(X509_STORE* pstStore, const char* filePath)
 {
-    X509* pstX509 = NULL;
-    FILE* file = NULL;
-    int ret = 0;
+	X509* pstX509 = NULL;
+	FILE* file = NULL;
+	int ret = 0;
 
-    file = fopen(filePath, "r");
-    if(!file)
-    {
-        DRM_TAPPS_EXCEPTION("AddCertSTOREFromFile Error : Parameter error! Fail to open a cert file.");
-        ret = -1;
-        goto error;
-    }
+	file = fopen(filePath, "r");
+	if(!file)
+	{
+		DRM_TAPPS_EXCEPTION("AddCertSTOREFromFile Error : Parameter error! Fail to open a cert file.");
+		ret = -1;
+		goto error;
+	}
 
-    pstX509 = PEM_read_X509(file, NULL, NULL, NULL);
-    if (pstX509 == NULL)
-    {
-        DRM_TAPPS_EXCEPTION("AddCertSTORE Error : d2i_X509 error!");
-        ret = -1;
-        goto error;
-    }
+	pstX509 = PEM_read_X509(file, NULL, NULL, NULL);
+	if (pstX509 == NULL)
+	{
+		DRM_TAPPS_EXCEPTION("AddCertSTORE Error : d2i_X509 error!");
+		ret = -1;
+		goto error;
+	}
 
-    X509_STORE_add_cert(pstStore, pstX509);
+	X509_STORE_add_cert(pstStore, pstX509);
 
 error:
-    if(file!=NULL)
-        fclose(file);
-    return ret;
+	if(file!=NULL)
+		fclose(file);
+	return ret;
 }
 
 int AddCertSTOREFromDir(X509_STORE* pstStore, const char* dirPath)
 {
-    int ret = 0;
+	int ret = 0;
 
-    DIR *dir = NULL;
-    struct dirent entry;
-    struct dirent *result;
-    int error;
-    char file_path_buff[512];
+	DIR *dir = NULL;
+	struct dirent entry;
+	struct dirent *result;
+	int error;
+	char file_path_buff[512];
 
-    if (pstStore == NULL || dirPath == NULL)
-    {
-        DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : Parameter error!");
-        ret = -1;
-        goto error;
-    }
+	if (pstStore == NULL || dirPath == NULL)
+	{
+		DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : Parameter error!");
+		ret = -1;
+		goto error;
+	}
 
-    dir = opendir(dirPath);
-    if(dir == NULL) {
-        DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : cannot open directory!");
-        ret = -1;
-        goto error;
-    }
+	dir = opendir(dirPath);
+	if(dir == NULL) {
+		DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : cannot open directory!");
+		ret = -1;
+		goto error;
+	}
 
-    for(;;) {
-        error = readdir_r(dir, &entry, &result);
-        if( error != 0 ) {
-            DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : fail to read entries from a directory!");
-            ret = -1;
-            goto error;
-        }
-        // readdir_r returns NULL in *result if the end 
-        // of the directory stream is reached
-        if(result == NULL) 
-            break;
+	for(;;) {
+		error = readdir_r(dir, &entry, &result);
+		if( error != 0 ) {
+			DRM_TAPPS_EXCEPTION("AddCertSTOREFromDir Error : fail to read entries from a directory!");
+			ret = -1;
+			goto error;
+		}
+		// readdir_r returns NULL in *result if the end
+		// of the directory stream is reached
+		if(result == NULL)
+			break;
 
-        if(entry.d_type == DT_REG) { // regular file
-            memset(file_path_buff, 0, sizeof(file_path_buff));
-            snprintf(file_path_buff, sizeof(file_path_buff), "%s/%s", dirPath, entry.d_name);
-            if(AddCertSTOREFromFile(pstStore, file_path_buff) == 0) {
-                DRM_TAPPS_LOG("Add root cert : file=%s", file_path_buff);
-            }else {
-                DRM_TAPPS_LOG("Fail to add root cert : file=%s", file_path_buff);
-            }
-        }
-    }
+		if(entry.d_type == DT_REG) { // regular file
+			memset(file_path_buff, 0, sizeof(file_path_buff));
+			snprintf(file_path_buff, sizeof(file_path_buff), "%s/%s", dirPath, entry.d_name);
+			if(AddCertSTOREFromFile(pstStore, file_path_buff) == 0) {
+				DRM_TAPPS_LOG("Add root cert : file=%s", file_path_buff);
+			}else {
+				DRM_TAPPS_LOG("Fail to add root cert : file=%s", file_path_buff);
+			}
+		}
+	}
 
 error:
-    if(dir!=NULL)
-        closedir(dir);
-    return ret;
+	if(dir!=NULL)
+		closedir(dir);
+	return ret;
 }
 
-int TADC_IF_VerifyCertChain( unsigned char* rica, int ricaLen,
-							 unsigned char* cert, int certLen )
+int TADC_IF_VerifyCertChain(unsigned char* rica, int ricaLen,
+							unsigned char* cert, int certLen)
 {
-    X509_STORE_CTX*			pstStoreCtx = NULL;
-    X509_STORE*				pstStore = NULL;
-    STACK_OF(X509)*         untrustedCerts = NULL;
+	X509_STORE_CTX* pstStoreCtx = NULL;
+	X509_STORE* pstStore = NULL;
+	STACK_OF(X509)*		 untrustedCerts = NULL;
 
-    X509*					pstX509 = NULL;
+	X509* pstX509 = NULL;
 
-    int iRet = 0;
+	int iRet = 0;
 	int iErrCode = 0;
 
 	//must call this function.
 	OpenSSL_add_all_algorithms();
 
-    pstStore = X509_STORE_new();
+	pstStore = X509_STORE_new();
 	if(pstStore == NULL)
 	{
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
-    untrustedCerts = sk_X509_new_null();
+	untrustedCerts = sk_X509_new_null();
 	if(untrustedCerts == NULL)
 	{
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
 
 	//Add RICA Cert to certchain
-    if ((iRet = AddCertUntrustedCerts(untrustedCerts, rica, ricaLen)) != 0)
+	if ((iRet = AddCertUntrustedCerts(untrustedCerts, rica, ricaLen)) != 0)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : Add RICA Cert to certchain!");
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
 	//Add Root CA Cert
-    if ((iRet = AddCertSTOREFromDir(pstStore, RO_ISSUER_ROOT_CERTS_DIR)) != 0)
+	if ((iRet = AddCertSTOREFromDir(pstStore, RO_ISSUER_ROOT_CERTS_DIR)) != 0)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : Add Root CA Cert!");
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
 	//Get Cert
@@ -443,53 +444,53 @@ int TADC_IF_VerifyCertChain( unsigned char* rica, int ricaLen,
 	if (pstX509 == NULL)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : Get Cert d2i_X509 error!");
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
-    X509_STORE_set_flags(pstStore, X509_V_FLAG_CB_ISSUER_CHECK);
-    pstStoreCtx = X509_STORE_CTX_new();
+	X509_STORE_set_flags(pstStore, X509_V_FLAG_CB_ISSUER_CHECK);
+	pstStoreCtx = X509_STORE_CTX_new();
 	if (pstStoreCtx == NULL)
 	{
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : 509_STORE_CTX_new error!");
-        iRet = -1;
-        goto error;
+		iRet = -1;
+		goto error;
 	}
 
 	//init
-    X509_STORE_CTX_init(pstStoreCtx, pstStore, pstX509, untrustedCerts);
+	X509_STORE_CTX_init(pstStoreCtx, pstStore, pstX509, untrustedCerts);
 
 	//Set Flag
-    X509_STORE_CTX_set_flags(pstStoreCtx, X509_V_FLAG_CB_ISSUER_CHECK);
+	X509_STORE_CTX_set_flags(pstStoreCtx, X509_V_FLAG_CB_ISSUER_CHECK);
 
 	//verify
-    iRet = X509_verify_cert(pstStoreCtx);
+	iRet = X509_verify_cert(pstStoreCtx);
 
 	//free
 error:
-    if (pstStore != NULL)
-	    X509_STORE_free(pstStore);
-    if (pstStoreCtx != NULL)
-	    X509_STORE_CTX_free(pstStoreCtx);
-    if (untrustedCerts != NULL)
-        sk_X509_free(untrustedCerts);
+	if (pstStore != NULL)
+		X509_STORE_free(pstStore);
+	if (pstStoreCtx != NULL)
+		X509_STORE_CTX_free(pstStoreCtx);
+	if (untrustedCerts != NULL)
+		sk_X509_free(untrustedCerts);
 
-    if (iRet == 1)
-    {
+	if (iRet == 1)
+	{
 		DRM_TAPPS_LOG("TADC_IF_VerifyCertChain Success! \n");
-        return 0;
-    }
-    else if (iRet == 0)
-    {
-        iErrCode = X509_STORE_CTX_get_error(pstStoreCtx);
+		return 0;
+	}
+	else if (iRet == 0)
+	{
+		iErrCode = X509_STORE_CTX_get_error(pstStoreCtx);
 		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : %s \n", X509_verify_cert_error_string(iErrCode));
-        return -1;
-    }
-    else
-    {
-        DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : 509_verify_cert error! \n");
-        return -1;
-    }
+		return -1;
+	}
+	else
+	{
+		DRM_TAPPS_EXCEPTION("TADC_IF_VerifyCertChain Error : 509_verify_cert error! \n");
+		return -1;
+	}
 }
 
 size_t TADC_IF_StrLen(const char *string)
