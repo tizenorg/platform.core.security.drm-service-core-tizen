@@ -107,7 +107,7 @@ ErrorExit:
 	return -1;
 }
 
-int main(int argc, char* argv[])
+int main(int, char *[])
 {
 	DRM_TAPPS_FRQ_LOG("=============Start Create TAD DB file ================\n\n ");
 

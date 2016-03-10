@@ -25,22 +25,20 @@
 #include "TADC_IF.h"
 #include "TADC_ErrorCode.h"
 
-static BYTE g_baSignatureKey[ 32 ] =
-{
-	0x29, 0x2b, 0xf2, 0x29, 0x1f, 0x8b, 0x47, 0x81, 0x95, 0xa, 0x84, 0xf8, 0x91, 0xda, 0x7, 0xd0,
+static BYTE g_baSignatureKey[32] = {
+	0x29, 0x2b, 0xf2, 0x29, 0x1f, 0x8b, 0x47, 0x81, 0x95, 0x0a, 0x84, 0xf8, 0x91, 0xda, 0x07, 0xd0,
 	0x9c, 0xde, 0x32, 0x3e, 0x9e, 0x46, 0x4a, 0xfc, 0xa4, 0xcc, 0x55, 0x6e, 0xf2, 0x81, 0x61, 0xdb
 };
 
-static BYTE	g_baAESKey[ 32 ] =
-{
-	-8, -121, 10, -59, -45, 109, 68, 73, 3, -97, -67, 30, -88, 47, -10,
-	-61, -33, 59, 2, 19, 88, 27, 18, 48, 28, -41, -83, -91, 31, 93, 1, 51
+static BYTE g_baAESKey[32] = {
+	0xf8, 0x87, 0x0a, 0xc5, 0xd3, 0x6d, 0x44, 0x49, 0x03, 0x9f, 0xbd, 0x1e, 0xa8, 0x2f, 0xf6, 0xc3,
+	0xdf, 0x3b, 0x02, 0x13, 0x58, 0x1b, 0x12, 0x30, 0x1c, 0xd7, 0xad, 0xa5, 0x1f, 0x5d, 0x01, 0x33
 };
 
 //Error Code
 static DWORD g_TADCErrorCode = 0;
 
-int	TADC_SetDeviceInfo(T_DEVICE_INFO *t_DeviceInfo)
+int TADC_SetDeviceInfo(T_DEVICE_INFO *t_DeviceInfo)
 {
 	int nResult = 0;
 
@@ -199,7 +197,7 @@ int	TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, siz
 	size_t		StrSize = 0;
 	size_t		len = 0;
 	size_t		i = 0;
-	size_t		k = 0;
+	long		k = 0;
 	size_t		reqdataset_size = 0;
 
 	// Debug
@@ -296,7 +294,7 @@ int	TADC_MakeRequestRO(T_ROACQ_INFO *t_ROAcqInfo, unsigned char * outBuffer, siz
 
 	TADC_IF_MemCpy(key, &g_baAESKey[0], 16);
 	TADC_IF_MemCpy(iv, &g_baAESKey[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
 
 	// Debug
 	DRM_TAPPS_LOG("Debug Log == TADC_MakeRequestRO  : After TADC_IF_AES_CTR  \n");
@@ -446,10 +444,6 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 	char pRoHeader[36] = {'<', '?', 'x', 'm', 'l', ' ', 'v', 'e', 'r', 's', 'i', 'o', 'n', '=', '"', '1', '.', '0', '"', '?', '>', 0x0A,
 						'<', 'T', 'i', 'z', 'e', 'n', 'L', 'i', 'c', 'e', 'n', 's', 'e', '>'};
 
-	// test code
-	FILE *fd = NULL;
-	char tmpPath[128] = {0, };
-
 	//Check Param Buffer
 	IF_TRUE_RETURN(inBuffer == NULL, TADC_PARAMETER_ERROR);
 	IF_TRUE_RETURN(t_ROAcqInfo== NULL, TADC_PARAMETER_ERROR);
@@ -529,7 +523,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 
 	TADC_IF_MemCpy(key, &g_baAESKey[0], 16 );
 	TADC_IF_MemCpy(iv, &g_baAESKey[16], 16 );
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	TADC_IF_SHA1(ReqTemp, req_length, sha1_tmp);
 	if (ReqTemp != NULL)
@@ -633,7 +627,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 	// Decrypt License
 	TADC_IF_MemCpy(key, &t_ROAcqInfo->t_DHInfo.K[0], 16);
 	TADC_IF_MemCpy(iv, &t_ROAcqInfo->t_DHInfo.K[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	// Test Code for get the plaintext ro
 	/*
@@ -721,7 +715,7 @@ int	TADC_GetResponseRO(unsigned char * inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO
 	// Decrypt timeStamp
 	TADC_IF_MemCpy(key, &t_ROAcqInfo->t_DHInfo.K[0], 16);
 	TADC_IF_MemCpy(iv, &t_ROAcqInfo->t_DHInfo.K[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)pbBuffer, &outlen, (unsigned char*)pbBuffer);
 
 	if (length >= (int)sizeof(t_ROAcqInfo->sTimeStamp))
 	{
@@ -1184,7 +1178,7 @@ int	TADC_GetDRMHeaderInfo(unsigned char * inBuffer, T_DRM_HEADER *t_DRMHeader)
 
 	TADC_IF_MemCpy(key, &g_baSignatureKey[0], 16);
 	TADC_IF_MemCpy(iv, &g_baSignatureKey[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
+	TADC_IF_AES_CTR(key, 16, iv, 20, (unsigned char*)sha1_tmp, &outlen, (unsigned char*)sha1_tmp);
 
 	if (TADC_IF_MemCmp(sha1_tmp, inBuffer, sizeof(sha1_tmp)))
 	{
@@ -1516,7 +1510,7 @@ int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
 
 	TADC_IF_MemCpy(key, &t_DRMHeader->CEK[0], 16);
 	TADC_IF_MemCpy(iv, &t_DRMHeader->CEK[16], 16);
-	TADC_IF_AES_CTR(16, key, 16, iv, length, (unsigned char*)temp, &length, (unsigned char*)temp);
+	TADC_IF_AES_CTR(key, 16, iv, length, (unsigned char*)temp, &length, (unsigned char*)temp);
 
 	nRemainBytes = nSize;
 	nBlockBytes = 16;

@@ -312,8 +312,11 @@ int _drm_tapps_decrypt_package
 	bool bRet = true;
 	int	ret = TADC_SUCCESS;
 
-	T_RO   t_RO = {0,};
-	DrmTdcFileHeader fileHeader = {{0}};
+	T_RO t_RO;
+	DrmTdcFileHeader fileHeader;
+
+	memset(&t_RO, 0x00, sizeof(t_RO));
+	memset(&fileHeader, 0x00, sizeof(fileHeader));
 
 	DRM_TAPPS_LOG("%s starts", __func__);
 	if (pTADCFilepath == NULL || pDecryptedFile == NULL)

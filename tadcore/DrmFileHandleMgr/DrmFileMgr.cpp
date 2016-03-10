@@ -67,7 +67,7 @@ void DrmFileMgr::Construct(void)
 	srand(time(NULL));
 }
 
-int DrmFileMgr::OpenFileHandler(const char *filePath, int mode, int *key)
+int DrmFileMgr::OpenFileHandler(const char *filePath, int *key)
 {
 	//DRM_TAPPS_LOG("%s) started. key=%d", __func__, *key);
 

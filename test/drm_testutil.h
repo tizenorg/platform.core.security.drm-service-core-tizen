@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+#include <vector>
 #include <openssl/dh.h>
 #include <tzplatform_config.h>
-
 
 #define RIURL "http://appdrm.test.com/"
 
@@ -45,8 +45,7 @@
 
 int generate_purchase_response(char** purchase_response_buff, char** req_id);
 
-int generate_right_object_request(const char* license_response_buff,
-                              char** ro_request_buff);
+int generate_right_object_request(const char* license_response_buff);
 
 int get_dh_key_from_ro_request(const char* ro_request_buff,
                               char** dh_key_p, char** dh_key_g, char** dh_key_a);
@@ -74,13 +73,15 @@ int _create_right_object_without_signature(const char* ro_template_path, const c
                                char** ro_buff);
 int _create_ro_signature(const char* ro_buff, const char* signer_prikey_path, char** signature);
 int _add_signature_to_ro(const char* ro_buff, const char* signature, char** ro_with_signature);
-int _encrypt_ro_with_dh_sec_key(const char* ro_with_signature, 
-                                const unsigned char* dh_secret_key, const int dh_sec_key_len, 
+int _encrypt_ro_with_dh_sec_key(const char* ro_with_signature,
+                                const unsigned char* dh_secret_key, const int dh_sec_key_len,
                                 char **encrypted_ro);
 
 int _create_response_data_in_ro_response(const char* reqid, const char* encrypted_ro, const char* dh_pubkey,
-                                char **response_data); 
+                                char **response_data);
 
 int _create_time_stamp(const unsigned char* dh_secret_key, char** time_stamp);
 
 
+using Binary = std::vector<unsigned char>;
+Binary _read_ro_file(const char *filename);

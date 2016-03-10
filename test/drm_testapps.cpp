@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+#include <vector>
+#include <fstream>
+#include <iostream>
+
 #include "drm-tizen-apps.h"
 #include "drm-tizen-error.h"
 #include "TADC_Core.h"
@@ -22,6 +26,7 @@
 
 #include "DTapps2Rights.h"
 #include "drm_testutil.h"
+#include "drm_testcore.h"
 #include <tzplatform_config.h>
 
 #if 1
@@ -32,13 +37,13 @@ static int third_key = 0;
 bool _write_logfile(const char *filename, char *buf, unsigned int len)
 {
 	FILE *fd = NULL;
-	
+
 	if ((fd = fopen(filename,"w+b")) == NULL)
 	{
 		return false;
 	}
 
-	fwrite(buf, 1, len,fd); 
+	fwrite(buf, 1, len,fd);
 	fclose(fd);
 
 	return true;
@@ -48,13 +53,13 @@ bool _read_logfile(const char *filename, char *buf, unsigned int *pLen)
 {
 	FILE *fd = NULL;
 	int  nReadLen = 0;
-	
+
 	if ((fd = fopen(filename,"r+b")) == NULL)
 	{
 		return false;
 	}
 
-	nReadLen = fread(buf, 1, *pLen,fd); 
+	nReadLen = fread(buf, 1, *pLen,fd);
 	*pLen = nReadLen;
 
 	fclose(fd);
@@ -64,587 +69,178 @@ bool _read_logfile(const char *filename, char *buf, unsigned int *pLen)
 
 bool tc01_VerifyRoSignature_Positive_01(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
-
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc01_VerifyRoSignature_Positive_01() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet != 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet != 0) {
 		printf("VerifyROSignature Failed! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc01_VerifyRoSignature_Positive_01() finished! -------- success \n");
-	return true;
 
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
+	return true;
 }
 
 bool tc01_VerifyRoSignature_Positive_02(void)
 {
-	char Buf[1024*10] = {0, };	
+	printf("tc01_VerifyRoSignature_Positive_02() -------- Started! \n");
 	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.ro");
 
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
+	auto buf = _read_ro_file(pRo);
 
-	printf("tc01_VerifyRoSignature_Positive_02() -------- Started! \n");
-
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
-
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet != 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet != 0) {
 		printf("VerifyROSignature Failed! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc01_VerifyRoSignature_Positive_02() finished! -------- success \n");
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc01_VerifyRoSignature_Positive_03(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
-
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc01_VerifyRoSignature_Positive_03() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
+	int nRet = TADC_VerifyROSignature(buf.data());
 	if (nRet != 0)
 	{
 		printf("VerifyROSignature Failed! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc01_VerifyRoSignature_Positive_03() finished! -------- success \n");
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc02_VerifyRoSignature_Negative_Cert_01(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_only_selfsigned.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc02_VerifyRoSignature_Negative_Cert_01() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_only_selfsigned.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc02_VerifyRoSignature_Negative_Cert_01 finished! -------- success \n");
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc02_VerifyRoSignature_Negative_Cert_02(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo	= tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_chain_invalid.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc02_VerifyRoSignature_Negative_Cert_02() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo	= tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_chain_invalid.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc02_VerifyRoSignature_Negative_Cert_02 finished! -------- success \n");
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc02_VerifyRoSignature_Negative_Cert_03(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_invalid.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc02_VerifyRoSignature_Negative_Cert_03() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_invalid.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc02_VerifyRoSignature_Negative_Cert_03 finished! -------- success \n");
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc03_VerifyRoSignature_Negative_Signature_01(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo   = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.signature_invalid.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc03_VerifyRoSignature_Negative_Signature_01() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo   = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.signature_invalid.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc03_VerifyRoSignature_Negative_Signature_01() finished! -------- success \n");
 
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc03_VerifyRoSignature_Negative_Signature_02(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo	= tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.signature_invalid.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc03_VerifyRoSignature_Negative_Signature_02() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo	= tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.signature_invalid.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc03_VerifyRoSignature_Negative_Signature_01() finished! -------- success \n");
 
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc03_VerifyRoSignature_Negative_Signature_03(void)
 {
-	char Buf[1024*10] = {0, };	
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.signature_invalid.ro");
-	FILE *fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	int nRet = 0;
-
 	printf("tc03_VerifyRoSignature_Negative_Signature_03() -------- Started! \n");
 
-	fd = fopen(pRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pRo);
-		goto CATCH;
-	}
+	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.signature_invalid.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pRo);
-		goto CATCH;
-	}
-
-	nRet = TADC_VerifyROSignature((unsigned char*) Buf);
-	if (nRet >= 0)
-	{
+	int nRet = TADC_VerifyROSignature(buf.data());
+	if (nRet >= 0) {
 		printf("VerifyROSignature have to be failed. But success! : %s, %d\n", pRo, nRet);
-		goto CATCH;
-	}
-	if (fd != NULL)
-	{
-		fclose(fd);
+		return false;
 	}
 
 	printf("tc03_VerifyRoSignature_Negative_Signature_03() finished! -------- success \n");
 
 	return true;
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return false;
 }
 
 bool tc04_isDrmFile_Positive_01(void)
 {
 	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
-	int nRet = 0;
 
 	printf("tc04_isDrmFile_Positive_01() -------- Started!\n");
 
-	nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
+	if (nRet != TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file failed. Path = %s, Ret = %d\n", pDCF,  nRet);
 		printf("%s file is not TADC file!\n", pDCF);
 		return false;
@@ -658,13 +254,11 @@ bool tc04_isDrmFile_Positive_01(void)
 bool tc04_isDrmFile_Positive_02(void)
 {
 	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
-	int nRet = 0;
 
 	printf("tc04_isDrmFile_Positive_02() -------- Started!\n");
 
-	nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
+	if (nRet != TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file failed. Path = %s, Ret = %d\n", pDCF,  nRet);
 		printf("%s file is not TADC file!\n", pDCF);
 		return false;
@@ -678,13 +272,11 @@ bool tc04_isDrmFile_Positive_02(void)
 bool tc04_isDrmFile_Positive_03(void)
 {
 	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
-	int nRet = 0;
 
 	printf("tc04_isDrmFile_Positive_03() -------- Started!\n");
 
-	nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pDCF, strlen(pDCF));
+	if (nRet != TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file failed. Path = %s, Ret = %d\n", pDCF,  nRet);
 		printf("%s file is not TADC file!\n", pDCF);
 		return false;
@@ -698,13 +290,11 @@ bool tc04_isDrmFile_Positive_03(void)
 bool tc05_isDrmFile_Negative_01(void)
 {
 	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/38EIfBurLJ_dec.tpk");
-	int nRet = 0;
 
 	printf("tc05_isDrmFile_Negative_01() -------- Started! \n");
 
-	nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
-	if(nRet == TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
+	if(nRet == TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file have to be failed. But Success!  Path = %s, Ret = %d\n", pApp,  nRet);
 		return false;
 	}
@@ -717,13 +307,11 @@ bool tc05_isDrmFile_Negative_01(void)
 bool tc05_isDrmFile_Negative_02(void)
 {
 	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/8SPXfqc6iL_dec.tpk");
-	int nRet = 0;
 
 	printf("tc05_isDrmFile_Negative_02() -------- Started! \n");
 
-	nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
-	if(nRet == TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
+	if(nRet == TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file have to be failed. But Success!  Path = %s, Ret = %d\n", pApp,  nRet);
 		return false;
 	}
@@ -736,13 +324,11 @@ bool tc05_isDrmFile_Negative_02(void)
 bool tc05_isDrmFile_Negative_03(void)
 {
 	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/FightGuiIF_dec.tpk");
-	int nRet = 0;
 
 	printf("tc05_isDrmFile_Negative_03() -------- Started! \n");
 
-	nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
-	if(nRet == TADC_SUCCESS)
-	{
+	int nRet = drm_tizen_is_drm_file(pApp, strlen(pApp));
+	if(nRet == TADC_SUCCESS) {
 		printf("drm_tizen_is_drm_file have to be failed. But Success!  Path = %s, Ret = %d\n", pApp,  nRet);
 		return false;
 	}
@@ -1081,7 +667,7 @@ bool tc07_DrmFileMgrPositive_01(void)
 
 	pDrmFileMgr = DrmFileMgr::GetInstance();
 
-	nRet = pDrmFileMgr->OpenFileHandler(pDCF, 1, &first_key);
+	nRet = pDrmFileMgr->OpenFileHandler(pDCF, &first_key);
 	if (nRet != TADC_SUCCESS)
 	{
 		printf("tc07_DrmFileMgrPositive_01 - OpenFileHandler() failed : key = %d, file = %s, %x\n", first_key, pDCF, nRet);
@@ -1166,7 +752,7 @@ bool tc07_DrmFileMgrPositive_02(void)
 
 	pDrmFileMgr = DrmFileMgr::GetInstance();
 
-	nRet = pDrmFileMgr->OpenFileHandler(pDCF, 1, &second_key);
+	nRet = pDrmFileMgr->OpenFileHandler(pDCF, &second_key);
 	if (nRet != TADC_SUCCESS)
 	{
 		printf("tc07_DrmFileMgrPositive_02 - OpenFileHandler() failed : key = %d, file = %s, %x\n", second_key, pDCF, nRet);
@@ -1252,7 +838,7 @@ bool tc07_DrmFileMgrPositive_03(void)
 
 	pDrmFileMgr = DrmFileMgr::GetInstance();
 
-	nRet = pDrmFileMgr->OpenFileHandler(pDCF, 1, &third_key);
+	nRet = pDrmFileMgr->OpenFileHandler(pDCF, &third_key);
 	if (nRet != TADC_SUCCESS)
 	{
 		printf("tc07_DrmFileMgrPositive_03 - OpenFileHandler() failed : key = %d, file = %s, %x\n", third_key, pDCF, nRet);
@@ -1646,7 +1232,7 @@ bool tc09_DrmFileMgrPositive_FileAPI_01(void)
 		DrmCurOffset = pDcfHandler->DrmTell();
 		if (DrmCurOffset != pDcfHandler->m_DrmCurOffset)
 		{
-			printf("tc09_DrmFileMgrPositive_FileAPI_01 - DrmCurOffset Comparison failed (SEEK_END, forward) : origin = %lld, result = %lld, i = %%lld\n", DrmCurOffset, pDcfHandler->m_DrmCurOffset, i);
+			printf("tc09_DrmFileMgrPositive_FileAPI_01 - DrmCurOffset Comparison failed (SEEK_END, forward) : origin = %lld, result = %lld, i = %lld\n", DrmCurOffset, pDcfHandler->m_DrmCurOffset, i);
 			goto CATCH;
 		}
 	}
@@ -2237,200 +1823,62 @@ bool tc12_TADC_SetDeviceInfo_01(void)
 	}
 	printf("DUID=%s\n", (char*)t_DeviceInfo.DUID);
 	printf("tc12_TADC_SetDeviceInfo_01() finished! -------- success \n");
-	
+
 	return true;
 }
 
-bool
-tc13_DTappsInstallLicense_01(void)
+bool tc13_DTappsInstallLicense_01(void)
 {
-	int nRet = TADC_SUCCESS;
-	char Buf[1024*10] = {0, };	
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
-	FILE* fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	bool res = true;
-
 	printf("tc13_DTappsInstallLicense_01() -------- Started! \n");
 
-	fd = fopen(pFirstRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
+	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		res = false;
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pFirstRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pFirstRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
-
-	nRet = DTappsInstallLicense(Buf);
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = DTappsInstallLicense(reinterpret_cast<char *>(buf.data()));
+	if (nRet != TADC_SUCCESS) {
 		printf("tc13_DTappsInstallLicense_01() failed. nRet=%d\n", nRet);
-		res = false;
-		goto CATCH;
+		return false;
 	}
 
 	printf("tc13_DTappsInstallLicense_01() finished! -------- success \n");
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return res;
+	return true;
 }
 
-bool
-tc13_DTappsInstallLicense_02(void)
+bool tc13_DTappsInstallLicense_02(void)
 {
-	int	nRet = TADC_SUCCESS;
-	char Buf[1024*10] = {0, };	
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.ro");
-	FILE* fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	bool res = true;
-
 	printf("tc13_DTappsInstallLicense_02() -------- Started! \n");
 
-	fd = fopen(pFirstRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
+	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		res = false;
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pFirstRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pFirstRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
-
-	nRet = DTappsInstallLicense(Buf);
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = DTappsInstallLicense(reinterpret_cast<char *>(buf.data()));
+	if (nRet != TADC_SUCCESS) {
 		printf("tc13_DTappsInstallLicense_02() failed. nRet=%d\n", nRet);
-		res = false;
-		goto CATCH;
+		return false;
 	}
 
 	printf("tc13_DTappsInstallLicense_02() finished! -------- success \n");
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return res;
+	return true;
 }
 
-bool
-tc13_DTappsInstallLicense_03(void)
+bool tc13_DTappsInstallLicense_03(void)
 {
-	int	nRet = TADC_SUCCESS;
-	char Buf[1024*10] = {0, };	
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
-	FILE* fd = NULL;
-	int	nReadLen = 0;
-	long lSize = 0;
-	bool res = true;
-
 	printf("tc13_DTappsInstallLicense_03() -------- Started! \n");
 
-	fd = fopen(pFirstRo, "rb");
-	if (fd == NULL)
-	{
-		printf("File is not exist! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
+	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
 
-	fseek(fd, 0, SEEK_END);
-	lSize = ftell(fd);
-	if (lSize < 0)
-	{
-		printf("fseek() and ftell() failed.");
-		res = false;
-		goto CATCH;
-	}
-	rewind(fd);
+	auto buf = _read_ro_file(pFirstRo);
 
-	memset(Buf, 0x00, sizeof(Buf));
-	nReadLen = fread(Buf, 1, lSize, fd);
-	if (nReadLen >= sizeof(Buf))
-	{
-		printf("Buffer error! : %s\n", pFirstRo);
-		goto CATCH;
-	}
-
-	if (nReadLen != lSize)
-	{
-		printf("File read error! : %s\n", pFirstRo);
-		res = false;
-		goto CATCH;
-	}
-
-	nRet = DTappsInstallLicense(Buf);
-	if (nRet != TADC_SUCCESS)
-	{
+	int nRet = DTappsInstallLicense(reinterpret_cast<char *>(buf.data()));
+	if (nRet != TADC_SUCCESS) {
 		printf("tc13_DTappsInstallLicense_03() failed. nRet=%d\n", nRet);
-		res = false;
-		goto CATCH;
+		return false;
 	}
 
 	printf("tc13_DTappsInstallLicense_03() finished! -------- success \n");
-
-CATCH:
-	if (fd != NULL)
-	{
-		fclose(fd);
-	}
-	return res;
+	return true;
 }
 
 bool
@@ -2602,31 +2050,34 @@ bool tc15_DrmTdcDecryptPackge_01(void)
 */
 #endif
 
-int main(int argc, char* argv[])
+int main(int, char *[])
 {
-//	return 0;
+	printf(" ---------- Test Tizen DRM core --- Start ....\n");
+	test_drm_core();
+	printf(" ---------- Test Tizen DRM core ---  End  ....\n");
+
 #if 1
 	printf(" ---------- Test Tizen DRM v2.0.1 APIs   ---  Start ....    \n");
 
 	int				bRet = TADC_SUCCESS;
-	
+
 	char 			ReqBuf[1024*5] = {0, };
 	unsigned int 	ReqBufLen = 0;
-	
-	char 			RespBuf[1024*10] = {0, };	
+
+	char 			RespBuf[1024*10] = {0, };
 	unsigned int	RespBufLen = 0;
-	
-//	char 			DecLicenseBuf[1024*10] = {0, };	
+
+//	char 			DecLicenseBuf[1024*10] = {0, };
 //	unsigned int 	DecLicenseBufLen = 0;
-	
+
 	char 			LicenseUrl[1024] = {0, };
 	unsigned int	LicenseUrlLen = 0;
-	
+
 	//2011.03.08
 	//DrmTdcFileHeader	TDCFileHeader;
 //	char	cid[1024] = {0, };
 //	char	riurl[1024] = {0, };
-	
+
 	char	testFileName[256] = {0, };
 	char	tempBuf[256] = {0, };
 
@@ -2867,7 +2318,7 @@ int main(int argc, char* argv[])
 	printf("===============================================================================\n");
 	printf ("Enter test file name  -->  ");
 
-	isOk = scanf("%s", testFileName); 
+	isOk = scanf("%s", testFileName);
 	if (isOk < 1)
 	{
 		printf ("Input value wrong! scanf() failed!!");
@@ -2884,15 +2335,15 @@ int main(int argc, char* argv[])
 	printf("%s file is TADC file!\n", testFileName);
 
 	//----------------------------------------------------------------------------------------------------
-	// 2. Make PurchaseRequest Data 
+	// 2. Make PurchaseRequest Data
 	//----------------------------------------------------------------------------------------------------
 	printf("\n2. Make PurchaseRequest Data  Start  ----------------------------------------\n");
-	
+
 	memset(ReqBuf, 0x00, sizeof(ReqBuf));
 	memset(LicenseUrl, 0x00, sizeof(LicenseUrl));
 	ReqBufLen = sizeof(ReqBuf);
 	LicenseUrlLen = sizeof(LicenseUrl);
-	
+
 	bRet = drm_tizen_generate_purchase_request(testFileName, ReqBuf, &ReqBufLen, LicenseUrl, &LicenseUrlLen);
 	if (bRet == false)
 	{
@@ -2900,7 +2351,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	printf("drm_tizen_generate_purchase_request - ReqBufLen : %d,  License Url : %s   \n", ReqBufLen, LicenseUrl);	
+	printf("drm_tizen_generate_purchase_request - ReqBufLen : %d,  License Url : %s   \n", ReqBufLen, LicenseUrl);
 	if ((bRet = _write_logfile("Request_1.dat", ReqBuf, ReqBufLen-1)) == false)
 	{
 		printf(" drm_tizen_generate_purchase_request _write_logfile Error!  \n");
@@ -2909,9 +2360,9 @@ int main(int argc, char* argv[])
 
 	//break.... HTTP Request & Reaponse Processing...
 	printf ("Enter any key after create Response_1.dat file. -->  ");
-	scanf ("%s", tempBuf); 
+	std::cin >> tempBuf;
 
-	memset(RespBuf, 0x00, sizeof(RespBuf));	
+	memset(RespBuf, 0x00, sizeof(RespBuf));
 	RespBufLen = sizeof(RespBuf);
 	if ((bRet = _read_logfile("Response_1.dat", RespBuf, &RespBufLen)) == false)
 	{
@@ -2920,15 +2371,15 @@ int main(int argc, char* argv[])
 	}
 
 	//----------------------------------------------------------------------------------------------------
-	// 3. Make License Request Data  
+	// 3. Make License Request Data
 	//----------------------------------------------------------------------------------------------------
 	printf("\n3. Make License Request Data  Start  ----------------------------------------\n");
-	
+
 	memset(ReqBuf, 0x00, sizeof(ReqBuf));
 	memset(LicenseUrl, 0x00, sizeof(LicenseUrl));
 	ReqBufLen = sizeof(ReqBuf);
-	LicenseUrlLen = sizeof(LicenseUrl);	
-	
+	LicenseUrlLen = sizeof(LicenseUrl);
+
 	bRet = drm_tizen_generate_license_request(RespBuf,  RespBufLen,	ReqBuf, &ReqBufLen, LicenseUrl, &LicenseUrlLen);
 	if (bRet != TADC_SUCCESS)
 	{
@@ -2945,9 +2396,9 @@ int main(int argc, char* argv[])
 
 	//break.... HTTP Request & Reaponse Processing...
 	printf ("Enter any key after create Response_2.dat file. -->  ");
-	scanf ("%s", tempBuf); 
+	std::cin >> tempBuf;
 
-	memset(RespBuf, 0x00, sizeof(RespBuf));	
+	memset(RespBuf, 0x00, sizeof(RespBuf));
 	RespBufLen = sizeof(RespBuf);
 	if ((bRet = _read_logfile("Response_2.dat", RespBuf, &RespBufLen)) == false)
 	{
