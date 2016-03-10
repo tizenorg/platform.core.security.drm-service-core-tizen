@@ -32,7 +32,7 @@ enum
 
 //typedef int DrmHandler;
 
-int DrmTdcFileOpen(const char* filePath, int mode, int* handle);
+int DrmTdcFileOpen(const char* filePath, int* handle);
 
 int DrmTdcFileClose(int* handle);
 

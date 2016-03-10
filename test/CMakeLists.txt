@@ -9,6 +9,7 @@ pkg_check_modules(DRM_TEST_DEP
 
 SET(DRMTESTUTIL_SRCS
 	${PROJECT_SOURCE_DIR}/test/drm_testapps.cpp
+	${PROJECT_SOURCE_DIR}/test/drm_testcore.cpp
 	${PROJECT_SOURCE_DIR}/test/drm_testutil.cpp
 	${PROJECT_SOURCE_DIR}/tadcore/TADCCore/TADC_Core.cpp
 	${PROJECT_SOURCE_DIR}/tadcore/TADCCore/TADC_Sub.cpp

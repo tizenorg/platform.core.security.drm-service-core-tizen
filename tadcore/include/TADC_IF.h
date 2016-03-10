@@ -32,7 +32,7 @@ int TADC_IF_GetDUID(char *DUID);
 int TADC_IF_GetDHKey(T_DH_INFO *t_dhinfo);
 int TADC_IF_GetDHKey_K(T_DH_INFO *t_dhinfo);
 
-int TADC_IF_AES_CTR(int keyLen, unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out);
+int TADC_IF_AES_CTR(unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out);
 int TADC_IF_SHA1(unsigned char *in, int inLen, unsigned char *out);
 
 size_t TADC_IF_StrLen(const char *string);

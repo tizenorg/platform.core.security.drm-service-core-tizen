@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+#include <vector>
 #include <openssl/dh.h>
 #include <tzplatform_config.h>
-
 
 #define RIURL "http://appdrm.test.com/"
 
@@ -45,8 +45,7 @@
 
 int generate_purchase_response(char** purchase_response_buff, char** req_id);
 
-int generate_right_object_request(const char* license_response_buff,
-                              char** ro_request_buff);
+int generate_right_object_request(const char* license_response_buff);
 
 int get_dh_key_from_ro_request(const char* ro_request_buff,
                               char** dh_key_p, char** dh_key_g, char** dh_key_a);
@@ -84,3 +83,5 @@ int _create_response_data_in_ro_response(const char* reqid, const char* encrypte
 int _create_time_stamp(const unsigned char* dh_secret_key, char** time_stamp);
 
 
+using Binary = std::vector<unsigned char>;
+Binary _read_ro_file(const char *filename);

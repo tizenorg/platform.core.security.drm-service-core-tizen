@@ -21,104 +21,107 @@
 
 #include "DTapps2Time.h"
 
- BOOL DTappsDtTmStr2Sec(unsigned char *time_str,time_t *TotalSec)
- {
-	 char		str[32] = {0};
-	 char		short_str[5] = {0};
-	 struct tm	time_fmt = {0,};
+BOOL DTappsDtTmStr2Sec(unsigned char *time_str,time_t *TotalSec)
+{
+	char str[32] = {0};
+	char short_str[5] = {0};
+	struct tm time_fmt;
 
-	 (void)TAPPS_GSTRLCPY(str, (const char*)time_str, sizeof(str));
+	memset(&time_fmt, 0x00, sizeof(time_fmt));
 
-	 DRM_TAPPS_LOG("str = %s",str);
+	TAPPS_GSTRLCPY(str, (const char*)time_str, sizeof(str));
 
-	 if(str[4] != '-' || str[7] != '-' || str[10] != 'T' || str[13] != ':' || str[16] != ':')
-	 {
-		 DRM_TAPPS_EXCEPTION("Format is incorrect:str=%s", str);
+	DRM_TAPPS_LOG("str = %s",str);
 
-		 return FALSE;
-	 }
+	if(str[4] != '-' || str[7] != '-' || str[10] != 'T' || str[13] != ':' || str[16] != ':')
+	{
+		DRM_TAPPS_EXCEPTION("Format is incorrect:str=%s", str);
 
-	 DTAPPS_MEMCPY(short_str, str, 4);
-	 time_fmt.tm_year = DTAPPS_ATOI(short_str) - 1900;
-	 DRM_TAPPS_FRQ_LOG("tm_year = %d", time_fmt.tm_year);
+		return FALSE;
+	}
 
-	 DTAPPS_MEMSET(short_str, 0x0,5);
-	 DTAPPS_MEMCPY(short_str, str + 5, 2);
-	 time_fmt.tm_mon = DTAPPS_ATOI(short_str) - 1;
-	 DRM_TAPPS_FRQ_LOG("tm_mon = %d", time_fmt.tm_mon);
+	DTAPPS_MEMCPY(short_str, str, 4);
+	time_fmt.tm_year = DTAPPS_ATOI(short_str) - 1900;
+	DRM_TAPPS_FRQ_LOG("tm_year = %d", time_fmt.tm_year);
 
-	 DTAPPS_MEMCPY(short_str, str + 8, 2);
-	 time_fmt.tm_mday = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_mday = %d", time_fmt.tm_mday);
+	DTAPPS_MEMSET(short_str, 0x0,5);
+	DTAPPS_MEMCPY(short_str, str + 5, 2);
+	time_fmt.tm_mon = DTAPPS_ATOI(short_str) - 1;
+	DRM_TAPPS_FRQ_LOG("tm_mon = %d", time_fmt.tm_mon);
 
-	 DTAPPS_MEMCPY(short_str, str + 11, 2);
-	 time_fmt.tm_hour = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_hour = %d", time_fmt.tm_hour);
+	DTAPPS_MEMCPY(short_str, str + 8, 2);
+	time_fmt.tm_mday = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_mday = %d", time_fmt.tm_mday);
+	DTAPPS_MEMCPY(short_str, str + 11, 2);
+	time_fmt.tm_hour = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_hour = %d", time_fmt.tm_hour);
 
-	 DTAPPS_MEMCPY(short_str, str + 14, 2);
-	 time_fmt.tm_min = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_min = %d", time_fmt.tm_min);
+	DTAPPS_MEMCPY(short_str, str + 14, 2);
+	time_fmt.tm_min = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_min = %d", time_fmt.tm_min);
 
-	 DTAPPS_MEMCPY(short_str, str + 17, 2);
-	 time_fmt.tm_sec = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_sec = %d", time_fmt.tm_sec);
+	DTAPPS_MEMCPY(short_str, str + 17, 2);
+	time_fmt.tm_sec = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_sec = %d", time_fmt.tm_sec);
 
-	 /* Convert into Seconds */
-	 *TotalSec = DTAPPS_MKTIME(&time_fmt);
-	 DRM_TAPPS_LOG("TotalSec = %lu", *TotalSec);
+	/* Convert into Seconds */
+	*TotalSec = DTAPPS_MKTIME(&time_fmt);
+	DRM_TAPPS_LOG("TotalSec = %lu", *TotalSec);
 
-	 return TRUE;
- }
+	return TRUE;
+}
 
 BOOL DTappsDtTmStr2StrucTm(unsigned char *time_str,struct tm *time_fmt)
- {
-	 char		str[32] = {0};
-	 char		short_str[5] = {0};
+{
+	char str[32] = {0};
+	char short_str[5] = {0};
 
-	 (void)TAPPS_GSTRLCPY(str, (const char*)time_str, sizeof(str));
+	TAPPS_GSTRLCPY(str, (const char*)time_str, sizeof(str));
 
-	 DRM_TAPPS_LOG("str = %s", str);
+	DRM_TAPPS_LOG("str = %s", str);
 
-	 if(str[4]!='-' || str[7]!='-' || str[10]!='T' || str[13]!=':' || str[16]!=':')
-	 {
-		 DRM_TAPPS_EXCEPTION("Format is incorrect:str=%s", str);
+	if(str[4]!='-' || str[7]!='-' || str[10]!='T' || str[13]!=':' || str[16]!=':')
+	{
+		DRM_TAPPS_EXCEPTION("Format is incorrect:str=%s", str);
 
-		 return FALSE;
-	 }
+		return FALSE;
+	}
 
-	 DTAPPS_MEMCPY(short_str, str, 4);
-	 time_fmt->tm_year = DTAPPS_ATOI(short_str) - 1900;
-	 DRM_TAPPS_FRQ_LOG("tm_year = %d", time_fmt->tm_year);
+	DTAPPS_MEMCPY(short_str, str, 4);
+	time_fmt->tm_year = DTAPPS_ATOI(short_str) - 1900;
+	DRM_TAPPS_FRQ_LOG("tm_year = %d", time_fmt->tm_year);
 
-	 DTAPPS_MEMSET(short_str, 0x0, 5);
-	 DTAPPS_MEMCPY(short_str, str + 5, 2);
-	 time_fmt->tm_mon = DTAPPS_ATOI(short_str) - 1;
-	 DRM_TAPPS_FRQ_LOG("tm_mon = %d", time_fmt->tm_mon);
+	DTAPPS_MEMSET(short_str, 0x0, 5);
+	DTAPPS_MEMCPY(short_str, str + 5, 2);
+	time_fmt->tm_mon = DTAPPS_ATOI(short_str) - 1;
+	DRM_TAPPS_FRQ_LOG("tm_mon = %d", time_fmt->tm_mon);
 
-	 DTAPPS_MEMCPY(short_str, str + 8, 2);
-	 time_fmt->tm_mday = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_mday = %d", time_fmt->tm_mday);
+	DTAPPS_MEMCPY(short_str, str + 8, 2);
+	time_fmt->tm_mday = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_mday = %d", time_fmt->tm_mday);
 
-	 DTAPPS_MEMCPY(short_str, str + 11, 2);
-	 time_fmt->tm_hour = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_hour = %d", time_fmt->tm_hour);
+	DTAPPS_MEMCPY(short_str, str + 11, 2);
+	time_fmt->tm_hour = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_hour = %d", time_fmt->tm_hour);
 
-	 DTAPPS_MEMCPY(short_str, str + 14, 2);
-	 time_fmt->tm_min = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_min = %d", time_fmt->tm_min);
+	DTAPPS_MEMCPY(short_str, str + 14, 2);
+	time_fmt->tm_min = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_min = %d", time_fmt->tm_min);
 
-	 DTAPPS_MEMCPY(short_str, str + 17, 2);
-	 time_fmt->tm_sec = DTAPPS_ATOI(short_str);
-	 DRM_TAPPS_FRQ_LOG("tm_sec = %d", time_fmt->tm_sec);
+	DTAPPS_MEMCPY(short_str, str + 17, 2);
+	time_fmt->tm_sec = DTAPPS_ATOI(short_str);
+	DRM_TAPPS_FRQ_LOG("tm_sec = %d", time_fmt->tm_sec);
 
-	 return TRUE;
- }
+	return TRUE;
+}
 
 BOOL DTappsGetSecureTime(time_t* seconds)
 {
 	time_t now = 0, secure_sec = 0;
 	int Delta = 0;
 	struct tm gm_fmt;
+
+	memset(&gm_fmt, 0x00, sizeof(gm_fmt));
 
 	now = DTAPPS_TIME(NULL);
 

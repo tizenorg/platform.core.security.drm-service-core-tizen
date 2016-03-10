@@ -19,7 +19,7 @@
 #include "drm_intf_tapps.h"
 
 EXPORT_API
-int DrmTdcFileOpen(const char* filePath, int mode, int* handle)
+int DrmTdcFileOpen(const char* filePath, int* handle)
 {
 	int nRet = TADC_SUCCESS;
 	int key = 0;
@@ -39,7 +39,7 @@ int DrmTdcFileOpen(const char* filePath, int mode, int* handle)
 		return TADC_GET_FILE_HANDLER_ERROR;
 	}
 
-	nRet = pDrmFileMgr->OpenFileHandler(filePath, 1, &key);
+	nRet = pDrmFileMgr->OpenFileHandler(filePath, &key);
 	if (nRet != TADC_SUCCESS)
 	{
 		DRM_TAPPS_EXCEPTION("DrmFileMgr::OpenFileHandler() error!");

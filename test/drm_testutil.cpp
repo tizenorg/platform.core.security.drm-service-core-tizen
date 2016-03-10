@@ -18,6 +18,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <vector>
+#include <fstream>
+#include <iostream>
 
 #include <openssl/bio.h>
 #include <openssl/evp.h>
@@ -39,16 +42,12 @@
 #define _INITIALIZED 0
 #define _UNINITIALIZED -1
 
-static unsigned char g_baSignatureKey[ 32 ] =
-{
-    0x29, 0x2b, 0xf2, 0x29, 0x1f, 0x8b, 0x47, 0x81, 0x95, 0xa, 0x84, 0xf8, 0x91, 0xda, 0x7, 0xd0,
-    0x9c, 0xde, 0x32, 0x3e, 0x9e, 0x46, 0x4a, 0xfc, 0xa4, 0xcc, 0x55, 0x6e, 0xf2, 0x81, 0x61, 0xdb
-};
+using Binary = std::vector<unsigned char>;
 
-static unsigned char g_baAESKey[ 32 ] =
+static unsigned char g_baAESKey[32] =
 {
-    -8, -121, 10, -59, -45, 109, 68, 73, 3, -97, -67, 30, -88, 47, -10,
-    -61, -33, 59, 2, 19, 88, 27, 18, 48, 28, -41, -83, -91, 31, 93, 1, 51
+    0xf8, 0x87, 0x0a, 0xc5, 0xd3, 0x6d, 0x44, 0x49, 0x03, 0x9f, 0xbd, 0x1e, 0xa8, 0x2f, 0xf6, 0xc3,
+    0xdf, 0x3b, 0x02, 0x13, 0x58, 0x1b, 0x12, 0x30, 0x1c, 0xd7, 0xad, 0xa5, 0x1f, 0x5d, 0x01, 0x33
 };
 
 
@@ -65,10 +64,14 @@ void __init_crypto()
 
 int __get_random_bytes(char* output, int random_len)
 {
-    FILE *fp;
-    fp = fopen("/dev/urandom", "r");
-    fread(output, 1, random_len, fp);
-    fclose(fp);
+    FILE *fp = fopen("/dev/urandom", "r");
+    auto size = fread(output, 1, random_len, fp);
+
+	fclose(fp);
+
+	if (size != static_cast<size_t>(random_len))
+		return DRMTEST_ERR_IO;
+
     return DRMTEST_SUCCESS;
 }
 
@@ -150,44 +153,28 @@ char* _replace_all(char *s, const char *olds, const char *news)
     return result;
 }
 
-int _read_text_file(const char* path, char** output)
+Binary _read_ro_file(const char *filename)
 {
-    int ret = DRMTEST_SUCCESS;
-    FILE *file = NULL;
-    char *buffer = NULL;
-    unsigned long fileLen;
-    
-    //Open file
-    file = fopen(path, "rb");
-    if (file == NULL) {
-        ret = DRMTEST_ERR_IO;
-        goto error;
-    }
-    
-    //Get file length
-    fseek(file, 0, SEEK_END);
-    fileLen=ftell(file);
-    fseek(file, 0, SEEK_SET);
-    
-    //Allocate memory
-    buffer=(char *)malloc(fileLen+1);
-    if (buffer == NULL) {
-        ret = DRMTEST_ERR_MEMORY;
-        goto error;
-    }
-    memset(buffer, 0, fileLen+1);
+    try {
+        std::ifstream is(filename, std::ifstream::binary);
+        if (!is || !is.is_open())
+            return Binary();
 
-    //Read file contents into buffer
-    fread(buffer, fileLen, 1, file);
-    
-    *output = buffer;
-error:
-    if(file != NULL)
-        fclose(file);
-    if(ret != DRMTEST_SUCCESS && buffer != NULL)
-        free(buffer);
+        is.seekg(0, is.end);
+        int length = is.tellg();
+        is.seekg(0, is.beg);
 
-    return ret;
+        Binary buffer(length + 1); /* for null-terminated */
+
+        is.read(reinterpret_cast<char *>(buffer.data()), length);
+        if (!is)
+            return Binary();
+
+        return buffer;
+    } catch (...) {
+        std::cerr << "Failed to read ro file: " << filename << std::endl;
+        return Binary();
+    }
 }
 
 int _create_dh_key(const char* dh_key_p_hex, const char* dh_key_g_hex, DH** ppkey)
@@ -283,25 +270,20 @@ int _create_right_object_without_signature(const char* ro_template_path, const c
                                 char** ro_buff)
 {
     int ret = DRMTEST_SUCCESS;
-    char *file_buff = NULL;
     char *cid_filled = NULL;
     char *duid_filled = NULL;
 
-    ret = _read_text_file(ro_template_path, &file_buff);
-    if(ret != DRMTEST_SUCCESS) {
-        goto error;
-    }
+    auto buf = _read_ro_file(ro_template_path);
 
-    cid_filled = _replace_all(file_buff, STR_PLACE_HOLDER_CID, cid);
+    cid_filled = _replace_all(reinterpret_cast<char *>(buf.data()), STR_PLACE_HOLDER_CID, cid);
     duid_filled = _replace_all(cid_filled, STR_PLACE_HOLDER_DUID, duid);
 
     *ro_buff = duid_filled;
-error:
-    if(file_buff != NULL)
-        free(file_buff);
-    if(cid_filled != NULL)
+
+    if (cid_filled != NULL)
         free(cid_filled);
-    if(ret != DRMTEST_SUCCESS && duid_filled != NULL)
+
+    if (ret != DRMTEST_SUCCESS && duid_filled != NULL)
         free(duid_filled);
 
     return ret;
@@ -363,8 +345,8 @@ int _create_ro_signature(const char* ro_buff, const char* signer_prikey_path, ch
 
     *signature = b64_sig_value;
 error:
-	if(file != NULL)
-		fclose(file);
+    if(file != NULL)
+        fclose(file);
     if(pkey != NULL)
         EVP_PKEY_free(pkey);
     if(ret != DRMTEST_SUCCESS && b64_sig_value != NULL)
@@ -396,7 +378,7 @@ int _encrypt_ro_with_dh_sec_key(const char* ro_with_signature,
 
     TADC_IF_MemCpy(key, dh_secret_key, 16);
     TADC_IF_MemCpy(iv, (dh_secret_key+16), 16);
-    ret = TADC_IF_AES_CTR(16, key, 16, iv, strlen(ro_with_signature), (unsigned char*)ro_with_signature, 
+    ret = TADC_IF_AES_CTR(key, 16, iv, strlen(ro_with_signature), (unsigned char*)ro_with_signature, 
                                     &encrypted_len, (unsigned char*)encrypted_buff);
     if(ret != 0) {
         ret = DRMTEST_ERR_CRYPTO;
@@ -423,14 +405,14 @@ int _create_response_data_in_ro_response(const char* reqid, const char* encrypte
     char* resp_data = NULL;
 
     // get hashed req_id
-    SHA_CTX     alginfoForReqId;
+    SHA_CTX alginfoForReqId;
     SHA1_Init(&alginfoForReqId);
     SHA1_Update(&alginfoForReqId, reqid, strlen(reqid));
     SHA1_Final(hashed_reqid, &alginfoForReqId);
 
-    for(int i=0; i<sizeof(hashed_reqid); i++) {
-        sprintf(hex_hashed_reqid + i*2, "%02x", hashed_reqid[i]);
-    }
+    for (size_t i = 0; i < sizeof(hashed_reqid); i++)
+        sprintf(hex_hashed_reqid + i * 2, "%02x", hashed_reqid[i]);
+
     sprintf(tmp_buff, "reqid=%s;B=%s;license=%s", hex_hashed_reqid, dh_pubkey, encrypted_ro);
 
     // get hash value
@@ -445,7 +427,7 @@ int _create_response_data_in_ro_response(const char* reqid, const char* encrypte
 
     TADC_IF_MemCpy(key, g_baAESKey, 16);
     TADC_IF_MemCpy(iv, (g_baAESKey+16), 16);
-    ret = TADC_IF_AES_CTR(16, key, 16, iv, 20, hash_value, &hmac_len, hmac);
+    ret = TADC_IF_AES_CTR(key, 16, iv, 20, hash_value, &hmac_len, hmac);
     if(ret != 0) {
         ret = DRMTEST_ERR_CRYPTO;
         goto error;
@@ -498,7 +480,7 @@ int _create_time_stamp(const unsigned char* dh_secret_key, char** time_stamp)
 
     TADC_IF_MemCpy(key, dh_secret_key, 16);
     TADC_IF_MemCpy(iv, (dh_secret_key+16), 16);
-    ret = TADC_IF_AES_CTR(16, key, 16, iv, strlen(tmp_time_buff), (unsigned char*)tmp_time_buff, 
+    ret = TADC_IF_AES_CTR(key, 16, iv, strlen(tmp_time_buff), (unsigned char*)tmp_time_buff, 
                           &enc_time_buff_len, enc_time_buff);
     if(ret != 0) {
         ret = DRMTEST_ERR_CRYPTO;
@@ -515,8 +497,6 @@ error:
     return ret;
 
 }
-
-static int req_id_seq = 0;
 
 int generate_purchase_response(char** purchase_response_buff, char** req_id)
 {
@@ -548,9 +528,8 @@ int generate_purchase_response(char** purchase_response_buff, char** req_id)
     }
     memset(rid, 0, 1024);
    
-    for(int i=0; i<sizeof(random); i++) {
-        sprintf(rid + i*2, "%02x", random[i]);
-    }
+    for (size_t i = 0; i < sizeof(random); i++)
+        sprintf(rid + i * 2, "%02x", random[i]);
 
     strncat(resp_buff, format1, strlen(format1));
     strncat(resp_buff, format2, strlen(format2));
@@ -573,8 +552,7 @@ error:
     return ret;
 }
 
-int generate_right_object_request(const char* license_response_buff,
-                              char** ro_request_buff)
+int generate_right_object_request(const char* license_response_buff)
 {
     int ret = DRMTEST_SUCCESS;
     unsigned int  req_buff_len = 1024*5;
@@ -777,7 +755,7 @@ int is_identical_files(const char* file1, const char* file2, int* identical)
 {
     int ret = DRMTEST_SUCCESS;
 
-	FILE *fp1 = NULL, *fp2 = NULL;
+    FILE *fp1 = NULL, *fp2 = NULL;
     int ch1, ch2;
 
     fp1 = fopen(file1, "r");

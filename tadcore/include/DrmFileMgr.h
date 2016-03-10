@@ -24,7 +24,7 @@ public:
 	static DrmFileMgr *GetInstance();
 	static void FreeInstance(void);
 
-	int OpenFileHandler(const char *filePath, int mode, int *key);
+	int OpenFileHandler(const char *filePath, int *key);
 	int CloseFileHandler(int key);
 	int GetFileHandler(int key, DrmFileHandler **handler);
 

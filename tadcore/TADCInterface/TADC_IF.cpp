@@ -173,7 +173,8 @@ int TADC_IF_GetDHKey_K(T_DH_INFO *t_dhinfo)
 	return 0;
 }
 
-int TADC_IF_AES_CTR(int keyLen, unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out)
+/* Only handles 128 bit aes key */
+int TADC_IF_AES_CTR(unsigned char *pKey, int ivLen, unsigned char *pIV, int inLen, unsigned char *in, int *pOutLen, unsigned char *out)
 {
 	AES_KEY 	stKey;
 	UINT		num;
