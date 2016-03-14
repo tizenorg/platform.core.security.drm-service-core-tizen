@@ -15,10 +15,10 @@
  */
 
 /**
- * @file	DrmTdcSvc.cpp
- * @brief	This file is for TADC Testcase temporarily.
- * @author	Sangil Yoon (si83.yoon@samsung.com)
- * @version	1.0
+ * @file    DrmTdcSvc.cpp
+ * @brief   This file is for TADC Testcase temporarily.
+ * @author  Sangil Yoon (si83.yoon@samsung.com)
+ * @version 1.0
  *
 */
 
@@ -29,29 +29,28 @@
 
 #include "DrmTdcSvc.h"
 
-#define	DHINFO_MAX			100
-#define	DHINFO_REQIDLEN		20
+#define DHINFO_MAX        100
+#define DHINFO_REQIDLEN   20
 
-#define	TDC_DECRYPT_IOLEN	1024*1024	// 1024 Kbyte
+#define TDC_DECRYPT_IOLEN 1024 * 1024 // 1024 Kbyte
 
 //DH Session Info Structure
 typedef struct
 {
-	BYTE			hashReqID[DHINFO_MAX][DHINFO_REQIDLEN];	//LicenseRequest Request ID Hash 20byte
-	T_ROACQ_INFO	t_ROAcqInfo[DHINFO_MAX];						//DH Info
+	BYTE hashReqID[DHINFO_MAX][DHINFO_REQIDLEN]; //LicenseRequest Request ID Hash 20byte
+	T_ROACQ_INFO t_ROAcqInfo[DHINFO_MAX];        //DH Info
 
 } DrmTdcDHInfo;
 
 
-static DrmTdcDHInfo 	g_DrmTdcDHInfo;
-static BOOL				g_DrmTdcDHFlag = FALSE;
+static DrmTdcDHInfo g_DrmTdcDHInfo;
+static BOOL g_DrmTdcDHFlag = FALSE;
 
-static char				g_sTimeStamp[21];		//2011.03.08, GMT ("CCCC-YY-MMThh:mm:ssZ")
+static char g_sTimeStamp[21]; //2011.03.08, GMT ("CCCC-YY-MMThh:mm:ssZ")
 
-bool DrmTdcGetFileHeader
-(
-	IN const char *pTADCFilepath, 			//TDC DRM File Path
-	IN OUT DrmTdcFileHeader *pFileHeader	//File Header Info ( CID, License URL )
+bool DrmTdcGetFileHeader(
+	IN const char *pTADCFilepath, //TDC DRM File Path
+	IN OUT DrmTdcFileHeader *pFileHeader //File Header Info ( CID, License URL )
 )
 {
 	T_FILE_HEADER t_FileHeader;
@@ -93,28 +92,19 @@ bool DrmTdcGetFileHeader
 	return TRUE;
 }
 
-bool DrmTdcDecryptPackage
-(
-	IN const char *pTADCFilepath, 		//TDC DRM File Path
-	IN const char *pLicenseBuf, 			//Decrypted Rights Object
-	IN unsigned int licenseBufLen, 		//pDecLicenseBuf Length
-	IN const char *pDecryptedFile			//Decrypted File Path
-)
+bool DrmTdcDecryptPackage(
+	IN const char *pTADCFilepath,
+	IN const char *pLicenseBuf,
+	IN unsigned int licenseBufLen,
+	IN const char *pDecryptedFile)
 {
-	T_FILE_HEADER	t_FileHeader;
-	T_DRM_HEADER	t_DRMHeader;
-	T_DEVICE_INFO	t_DeviceInfo;
-	T_RO			t_RO;
+	T_FILE_HEADER t_FileHeader;
+	T_DRM_HEADER t_DRMHeader;
+	T_DEVICE_INFO t_DeviceInfo;
+	T_RO t_RO;
 
-
-	long long offset = 0, BlockCnt = 0, EncBlockCnt = 0, size1 = 0, size2 = 0;
-	FILE	*hFile1 =  INVALID_HOBJ;	//TDC drm file
-	FILE	*hFile2 =  INVALID_HOBJ; 	//Decrypted file
-
-	//unsigned char tempbuf[512];		// Decrypt Block
-	unsigned char *pReadBuf;		// File Read buffer
-
-	ULONG	i = 0, k = 0, DecLen = 0;
+	FILE *hFile1 = INVALID_HOBJ; //TDC drm file
+	FILE *hFile2 = INVALID_HOBJ; //Decrypted file
 
 	//2011.03.08, init
 	memset(&t_FileHeader, 0x00, sizeof(T_FILE_HEADER));
@@ -137,7 +127,7 @@ bool DrmTdcDecryptPackage
 		return FALSE;
 	}
 
-	pReadBuf = (TADC_U8*)TADC_IF_Malloc(TDC_DECRYPT_IOLEN);
+	auto pReadBuf = (TADC_U8*)TADC_IF_Malloc(TDC_DECRYPT_IOLEN);
 	if (!pReadBuf) {
 		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Error : pReadBuf Malloc Fail");
 		return FALSE;
@@ -156,16 +146,9 @@ bool DrmTdcDecryptPackage
 	if (TADC_GetResponseROInfo((unsigned char*)pLicenseBuf, &t_RO) < 0) {
 		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Error : TADC_GetResponseROInfo");
 		TADC_MEMFree_FileHeader(&t_FileHeader);
-		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Debug : 	1");
-
 		TADC_MEMFree_DRMHeader(&t_DRMHeader);
-		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Debug : 	2");
-
 		TADC_MEMFree_RO(&t_RO);
-		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Debug : 	3");
-
 		TADC_IF_Free(pReadBuf);
-		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Debug : 	4");
 
 		return FALSE;
 	}
@@ -203,33 +186,31 @@ bool DrmTdcDecryptPackage
 	}
 
 	fseek(hFile1, 0, SEEK_END);
-	size1 = ftell(hFile1);
+	auto size1 = ftell(hFile1);
 
-	offset = t_FileHeader.Offset1 + 35 + t_DRMHeader.XmlSize;
-	fseek(hFile1, offset, SEEK_SET );
+	auto offset = t_FileHeader.Offset1 + 35 + t_DRMHeader.XmlSize;
+	fseek(hFile1, offset, SEEK_SET);
 
-	size2 = size1 - offset;	//plain file size
-	BlockCnt = (size2 / 512) + ( (size2 % 512) ? 1 : 0 );
+	auto size2 = size1 - offset; //plain file size
+	auto BlockCnt = (size2 / 512) + ((size2 % 512) ? 1 : 0);
 
-	if (t_DRMHeader.EncryptionRange == -1)
-		EncBlockCnt = BlockCnt;
-	else
+	auto EncBlockCnt = BlockCnt;
+	if (t_DRMHeader.EncryptionRange != -1)
 		EncBlockCnt = t_DRMHeader.EncryptionRange;
 
-	i = 0;
-
+	long int i = 0;
 	while (i < BlockCnt) {
-		ULONG ReadLen = fread(pReadBuf, 1, TDC_DECRYPT_IOLEN, hFile1);
+		size_t ReadLen = fread(pReadBuf, 1, TDC_DECRYPT_IOLEN, hFile1);
 
 		if (ReadLen < 1)
 			break;
 
-		for (k = 0 ; k < ReadLen ; k += 512) {
+		for (size_t k = 0; k < ReadLen; k += 512) {
 			if (i < EncBlockCnt) {
-				DecLen = ReadLen - k;
+				size_t DecLen = ReadLen - k;
 				DecLen = (DecLen > 512) ? 512 : DecLen;
 
-				if (TADC_DecryptBlock((char*)pReadBuf + k, DecLen, &t_DRMHeader) < 0 ) {
+				if (TADC_DecryptBlock((char *)pReadBuf + k, DecLen, &t_DRMHeader) < 0) {
 					DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage Error : TADC_DecryptBlock");
 					fclose(hFile1);
 					fclose(hFile2);
@@ -245,8 +226,8 @@ bool DrmTdcDecryptPackage
 		fwrite(pReadBuf, 1, ReadLen, hFile2);
 	}
 
-	fclose(hFile1);	//sample drm file
-	fclose(hFile2);	//plain file
+	fclose(hFile1); //sample drm file
+	fclose(hFile2); //plain file
 
 	TADC_MEMFree_FileHeader(&t_FileHeader);
 	TADC_MEMFree_DRMHeader(&t_DRMHeader);
@@ -256,25 +237,17 @@ bool DrmTdcDecryptPackage
 	return TRUE;
 }
 
-bool DrmTdcDecryptPackage2
-(
-	IN const char *pTADCFilepath, 		//TDC DRM File Path
-	IN T_RO		  t_RO, 				//RO Info
-	IN const char *pDecryptedFile		//Decrypted File Path
-)
+bool DrmTdcDecryptPackage2(
+	IN const char *pTADCFilepath,
+	IN T_RO t_RO,
+	IN const char *pDecryptedFile)
 {
-	T_FILE_HEADER	t_FileHeader;
-	T_DRM_HEADER	t_DRMHeader;
-	T_DEVICE_INFO	t_DeviceInfo;
+	T_FILE_HEADER t_FileHeader;
+	T_DRM_HEADER t_DRMHeader;
+	T_DEVICE_INFO t_DeviceInfo;
 
-
-	long long offset = 0, BlockCnt = 0, EncBlockCnt = 0, size1 = 0, size2 = 0;
-	FILE*	hFile1 =  INVALID_HOBJ;		//TDC drm file
-	FILE*	hFile2 =  INVALID_HOBJ; 	//Decrypted file
-
-	unsigned char *pReadBuf;			// File Read buffer
-
-	ULONG	i = 0, k = 0, DecLen = 0;
+	FILE *hFile1 = INVALID_HOBJ; //TDC drm file
+	FILE *hFile2 = INVALID_HOBJ; //Decrypted file
 
 	//2011.03.08, init
 	memset(&t_FileHeader, 0x00, sizeof(T_FILE_HEADER));
@@ -292,7 +265,7 @@ bool DrmTdcDecryptPackage2
 		return FALSE;
 	}
 
-	pReadBuf = (TADC_U8*)TADC_IF_Malloc(TDC_DECRYPT_IOLEN);
+	auto pReadBuf = (TADC_U8*)TADC_IF_Malloc(TDC_DECRYPT_IOLEN);
 	if (!pReadBuf) {
 		DRM_TAPPS_EXCEPTION("DrmTdcDecryptPackage2 Error : pReadBuf Malloc Fail");
 		return FALSE;
@@ -337,30 +310,28 @@ bool DrmTdcDecryptPackage2
 	}
 
 	fseek(hFile1, 0, SEEK_END);
-	size1 = ftell(hFile1);
+	auto size1 = ftell(hFile1);
 
-	offset = t_FileHeader.Offset1 + 35 + t_DRMHeader.XmlSize;
+	auto offset = t_FileHeader.Offset1 + 35 + t_DRMHeader.XmlSize;
 	fseek(hFile1, offset, SEEK_SET );
 
-	size2 = size1 - offset;	//plain file size
-	BlockCnt = (size2 / 512) + ((size2 % 512) ? 1 : 0);
+	auto size2 = size1 - offset; //plain file size
+	auto BlockCnt = (size2 / 512) + ((size2 % 512) ? 1 : 0);
 
-	if (t_DRMHeader.EncryptionRange == -1)
-		EncBlockCnt = BlockCnt;
-	else
+	auto EncBlockCnt = BlockCnt;
+	if (t_DRMHeader.EncryptionRange != -1)
 		EncBlockCnt = t_DRMHeader.EncryptionRange;
 
-	i = 0;
-
+	long int i = 0;
 	while (i < BlockCnt) {
-		ULONG ReadLen = fread(pReadBuf, 1, TDC_DECRYPT_IOLEN, hFile1);
+		auto ReadLen = fread(pReadBuf, 1, TDC_DECRYPT_IOLEN, hFile1);
 
 		if (ReadLen < 1)
 			break;
 
-		for (k = 0 ; k < ReadLen ; k += 512) {
+		for (size_t k = 0 ; k < ReadLen ; k += 512) {
 			if (i < EncBlockCnt) {
-				DecLen = ReadLen - k;
+				auto DecLen = ReadLen - k;
 				DecLen = ( DecLen > 512) ? 512 : DecLen;
 
 				if (TADC_DecryptBlock((char*)pReadBuf + k, DecLen, &t_DRMHeader) < 0) {
@@ -378,8 +349,8 @@ bool DrmTdcDecryptPackage2
 		fwrite(pReadBuf, 1, ReadLen, hFile2);
 	}
 
-	fclose(hFile1);	//sample drm file
-	fclose(hFile2);	//plain file
+	fclose(hFile1); //sample drm file
+	fclose(hFile2); //plain file
 
 	TADC_MEMFree_FileHeader(&t_FileHeader);
 	TADC_MEMFree_DRMHeader(&t_DRMHeader);
@@ -388,19 +359,18 @@ bool DrmTdcDecryptPackage2
 	return TRUE;
 }
 
-bool DrmTdcGeneratePurchaseRequest
-(
-	IN const char *pTADCFilepath,		//TDC DRM File Path
-	IN OUT char *pReqBuf, 				//Purchase Request Data
-	IN OUT unsigned int *pReqBufLen,		//IN : pReqBuf Length, OUT : Purchase Request Data String Size ( including null terminator )
-	IN OUT char *pLicenseUrl, 			//License Acquisition URL Data
-	IN OUT unsigned int *pLicenseUrlLen	//IN : pLicenseUrl Length, OUT : License Server URL Data String Size (  including null terminator )
+bool DrmTdcGeneratePurchaseRequest(
+	IN const char *pTADCFilepath,        //TDC DRM File Path
+	IN OUT char *pReqBuf,                //Purchase Request Data
+	IN OUT unsigned int *pReqBufLen,     //IN : pReqBuf Length, OUT : Purchase Request Data String Size ( including null terminator )
+	IN OUT char *pLicenseUrl,            //License Acquisition URL Data
+	IN OUT unsigned int *pLicenseUrlLen  //IN : pLicenseUrl Length, OUT : License Server URL Data String Size (  including null terminator )
 )
 {
-	T_FILE_HEADER	t_FileHeader;
-	T_DRM_HEADER	t_DRMHeader;
-	T_DEVICE_INFO	t_DeviceInfo;
-	char			ReqLicBuf[REQU_MAXSIZE] = {0};	//Request buff max size. (2011.03.08)
+	T_FILE_HEADER t_FileHeader;
+	T_DRM_HEADER t_DRMHeader;
+	T_DEVICE_INFO t_DeviceInfo;
+	char ReqLicBuf[REQU_MAXSIZE] = {0}; //Request buff max size. (2011.03.08)
 
 	//null check
 	if (!pTADCFilepath
@@ -462,22 +432,21 @@ bool DrmTdcGeneratePurchaseRequest
 	return TRUE;
 }
 
-int DrmTdcGenerateLicenseRequest
-(
-	IN const char *pRespBuf, 			//Response Data String of the Purchase Request ( Null terminator string )
-	IN unsigned int respBufLen,			//pResBuf Length
-	IN OUT char *pReqBuf, 				//License Request Data
-	IN OUT unsigned int *pReqBufLen,		//IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
-	IN OUT char *pLicenseUrl, 			//License Acquisition URL Data
-	IN OUT unsigned int *pLicenseUrlLen	//IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
+int DrmTdcGenerateLicenseRequest(
+	IN const char *pRespBuf,              //Response Data String of the Purchase Request ( Null terminator string )
+	IN unsigned int respBufLen,           //pResBuf Length
+	IN OUT char *pReqBuf,                 //License Request Data
+	IN OUT unsigned int *pReqBufLen,      //IN : pReqBuf Length, OUT : Rights Request Data String Size ( including null terminator )
+	IN OUT char *pLicenseUrl,             //License Acquisition URL Data
+	IN OUT unsigned int *pLicenseUrlLen   //IN : pLicenseUrl Length, OUT : Rights Issuer Server URL Data String Size (  including null terminator )
 )
 {
-	T_ROACQ_INFO	*pt_ROAcqInfo = NULL;
+	T_ROACQ_INFO *pt_ROAcqInfo = NULL;
 
-	char			ReqROBuf[REQU_MAXSIZE] = {0};	//Request buff max size. (2011.03.08)
-	BYTE			sha1_tmp[DHINFO_REQIDLEN] = {0};
-	int				idx = 0;
-	unsigned char   ROVer[2];		//2011.03.08
+	char ReqROBuf[REQU_MAXSIZE] = {0}; //Request buff max size. (2011.03.08)
+	BYTE sha1_tmp[DHINFO_REQIDLEN] = {0};
+	int idx = 0;
+	unsigned char ROVer[2]; //2011.03.08
 
 	//null check
 	if (!pRespBuf
@@ -554,19 +523,18 @@ int DrmTdcGenerateLicenseRequest
 	return TADC_SUCCESS;
 }
 
-int DrmTdcDecryptLicense
-(
-	IN const char *pRespBuf, 				//Response Data String of the Rights Request ( Null terminator string )
-	IN unsigned int respBufLen,				//pResBuf Length
-	IN OUT char *pDecLicenseBuf, 			//Decrypted Rights Object
-	IN OUT unsigned int *decLicenseBufLen	//IN : pDecLicenseBuf Length, OUT : Decrypted Rights Object String Size (  including null terminator )
+int DrmTdcDecryptLicense(
+	IN const char *pRespBuf,              //Response Data String of the Rights Request ( Null terminator string )
+	IN unsigned int respBufLen,           //pResBuf Length
+	IN OUT char *pDecLicenseBuf,          //Decrypted Rights Object
+	IN OUT unsigned int *decLicenseBufLen //IN : pDecLicenseBuf Length, OUT : Decrypted Rights Object String Size (  including null terminator )
 )
 {
-	T_ROACQ_INFO	*pt_ROAcqInfo=NULL;
-	T_RO			t_RO;
-	int				ret = 0;
-	int				idx = 0;
-	BYTE			sha1_tmp[20] = {0};
+	T_ROACQ_INFO *pt_ROAcqInfo = NULL;
+	T_RO t_RO;
+	int ret = 0;
+	int idx = 0;
+	BYTE sha1_tmp[20] = {0};
 
 	//null check
 	if (!pRespBuf

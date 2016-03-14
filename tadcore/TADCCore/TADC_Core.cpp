@@ -1428,7 +1428,7 @@ int TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHe
 	return -1;
 }
 
-int TADC_DecryptBlock( char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader)
+int TADC_DecryptBlock(char *pbBuffer, int nSize, const T_DRM_HEADER *t_DRMHeader)
 {
 	TADC_U8 key[16] = {0, };
 	TADC_U8 iv[16] = {0, };
