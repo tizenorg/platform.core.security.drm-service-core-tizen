@@ -27,7 +27,6 @@
 #include "DTapps2Rights.h"
 #include "drm_testutil.h"
 #include "drm_testcore.h"
-#include <tzplatform_config.h>
 
 #if 1
 static int first_key = 0;
@@ -71,7 +70,7 @@ bool tc01_VerifyRoSignature_Positive_01(void)
 {
 	printf("tc01_VerifyRoSignature_Positive_01() -------- Started! \n");
 
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
+	const char *pRo = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -89,7 +88,7 @@ bool tc01_VerifyRoSignature_Positive_01(void)
 bool tc01_VerifyRoSignature_Positive_02(void)
 {
 	printf("tc01_VerifyRoSignature_Positive_02() -------- Started! \n");
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.ro");
+	const char *pRo = TEST_DATA_DIR "/RO/8SPXfqc6iL-1.0.0.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -107,7 +106,7 @@ bool tc01_VerifyRoSignature_Positive_03(void)
 {
 	printf("tc01_VerifyRoSignature_Positive_03() -------- Started! \n");
 
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
+	const char *pRo = TEST_DATA_DIR "/RO/FightGuiIF-1.0.0.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -126,7 +125,7 @@ bool tc02_VerifyRoSignature_Negative_Cert_01(void)
 {
 	printf("tc02_VerifyRoSignature_Negative_Cert_01() -------- Started! \n");
 
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_only_selfsigned.ro");
+	const char *pRo  = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.cert_only_selfsigned.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -144,7 +143,7 @@ bool tc02_VerifyRoSignature_Negative_Cert_02(void)
 {
 	printf("tc02_VerifyRoSignature_Negative_Cert_02() -------- Started! \n");
 
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_chain_invalid.ro");
+	const char *pRo = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.cert_chain_invalid.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -162,7 +161,7 @@ bool tc02_VerifyRoSignature_Negative_Cert_03(void)
 {
 	printf("tc02_VerifyRoSignature_Negative_Cert_03() -------- Started! \n");
 
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.cert_invalid.ro");
+	const char *pRo  = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.cert_invalid.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -180,7 +179,7 @@ bool tc03_VerifyRoSignature_Negative_Signature_01(void)
 {
 	printf("tc03_VerifyRoSignature_Negative_Signature_01() -------- Started! \n");
 
-	const char *pRo   = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.signature_invalid.ro");
+	const char *pRo   = TEST_DATA_DIR "/RO/FightGuiIF-1.0.0.signature_invalid.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -199,7 +198,7 @@ bool tc03_VerifyRoSignature_Negative_Signature_02(void)
 {
 	printf("tc03_VerifyRoSignature_Negative_Signature_02() -------- Started! \n");
 
-	const char *pRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.signature_invalid.ro");
+	const char *pRo = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.signature_invalid.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -218,7 +217,7 @@ bool tc03_VerifyRoSignature_Negative_Signature_03(void)
 {
 	printf("tc03_VerifyRoSignature_Negative_Signature_03() -------- Started! \n");
 
-	const char *pRo  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.signature_invalid.ro");
+	const char *pRo  = TEST_DATA_DIR "/RO/8SPXfqc6iL-1.0.0.signature_invalid.ro";
 
 	auto buf = _read_ro_file(pRo);
 
@@ -235,7 +234,7 @@ bool tc03_VerifyRoSignature_Negative_Signature_03(void)
 
 bool tc04_isDrmFile_Positive_01(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
 
 	printf("tc04_isDrmFile_Positive_01() -------- Started!\n");
 
@@ -253,7 +252,7 @@ bool tc04_isDrmFile_Positive_01(void)
 
 bool tc04_isDrmFile_Positive_02(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/8SPXfqc6iL.tpk";
 
 	printf("tc04_isDrmFile_Positive_02() -------- Started!\n");
 
@@ -271,7 +270,7 @@ bool tc04_isDrmFile_Positive_02(void)
 
 bool tc04_isDrmFile_Positive_03(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/FightGuiIF.tpk";
 
 	printf("tc04_isDrmFile_Positive_03() -------- Started!\n");
 
@@ -289,7 +288,7 @@ bool tc04_isDrmFile_Positive_03(void)
 
 bool tc05_isDrmFile_Negative_01(void)
 {
-	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/38EIfBurLJ_dec.tpk");
+	const char *pApp = TEST_DATA_DIR "/DecryptedApp/38EIfBurLJ_dec.tpk";
 
 	printf("tc05_isDrmFile_Negative_01() -------- Started! \n");
 
@@ -306,7 +305,7 @@ bool tc05_isDrmFile_Negative_01(void)
 
 bool tc05_isDrmFile_Negative_02(void)
 {
-	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/8SPXfqc6iL_dec.tpk");
+	const char *pApp = TEST_DATA_DIR "/DecryptedApp/8SPXfqc6iL_dec.tpk";
 
 	printf("tc05_isDrmFile_Negative_02() -------- Started! \n");
 
@@ -323,7 +322,7 @@ bool tc05_isDrmFile_Negative_02(void)
 
 bool tc05_isDrmFile_Negative_03(void)
 {
-	const char *pApp = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/FightGuiIF_dec.tpk");
+	const char *pApp = TEST_DATA_DIR "/DecryptedApp/FightGuiIF_dec.tpk";
 
 	printf("tc05_isDrmFile_Negative_03() -------- Started! \n");
 
@@ -341,7 +340,7 @@ bool tc05_isDrmFile_Negative_03(void)
 bool
 tc06_DrmFileHandlerPositive_01(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
 	DrmFileHandler* pDcfHandler = NULL;
 	unsigned char* pBufCEK = NULL;
 	unsigned char pCEK[CEK_SIZE + 1] = {0xB1, 0x03, 0x4F, 0x30, 0xC8, 0x52, 0x45, 0x7E, 0x9D, 0xA2, 0x52, 0x25, 0x2E, 0xA9, 0x9B, 0x2B, 0x25, 0x36, 0xF1, 0x8D, 0x04, 0xD1, 0x4C, 0xE3, 0x96, 0x81, 0xD9, 0x98, 0xBB, 0xD7, 0x7E, 0xCA, 0x00};
@@ -444,7 +443,7 @@ CATCH:
 bool
 tc06_DrmFileHandlerPositive_02(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/8SPXfqc6iL.tpk";
 	unsigned char* pBufCEK = NULL;
 	DrmFileHandler* pDcfHandler = NULL;
 	unsigned char pCEK[CEK_SIZE + 1] = {0xBB, 0x87, 0x5D, 0xA8, 0x2C, 0xC4, 0x47, 0x81, 0x90, 0xBA, 0xD9, 0xB0, 0x0C, 0xD2, 0x94, 0xE9, 0x19, 0x0F, 0x24, 0x62, 0x5B, 0x0B, 0x49, 0x7A, 0xAE, 0x8E, 0x1D, 0x88, 0x7F, 0xF9, 0x96, 0xDB, 0x00};
@@ -547,7 +546,7 @@ CATCH:
 bool
 tc06_DrmFileHandlerPositive_03(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/FightGuiIF.tpk";
 	unsigned char* pBufCEK = NULL;
 	DrmFileHandler* pDcfHandler = NULL;
 	unsigned char pCEK[CEK_SIZE + 1] = {0x34, 0x5A, 0x94, 0x28, 0xC3, 0xF4, 0x44, 0x3F, 0x86, 0x6D, 0xCF, 0xC5, 0x78, 0x1F, 0x23, 0xCE, 0xE9, 0x9B, 0xC4, 0x45, 0xA3, 0x30, 0x47, 0x1E, 0xB4, 0xE0, 0xAF, 0x96, 0x0F, 0xDE, 0xA9, 0xB4, 0x00};
@@ -649,7 +648,7 @@ CATCH:
 
 bool tc07_DrmFileMgrPositive_01(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -734,7 +733,7 @@ CATCH:
 
 bool tc07_DrmFileMgrPositive_02(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/8SPXfqc6iL.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -819,7 +818,7 @@ CATCH:
 
 bool tc07_DrmFileMgrPositive_03(void)
 {
-	const char *pDCF  = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
+	const char *pDCF  = TEST_DATA_DIR "/DCF/FightGuiIF.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -905,7 +904,7 @@ CATCH:
 
 bool tc08_DrmFileMgrPositive_GetFileHandler_01(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -984,7 +983,7 @@ CATCH:
 
 bool tc08_DrmFileMgrPositive_GetFileHandler_02(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/8SPXfqc6iL.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -1063,7 +1062,7 @@ CATCH:
 
 bool tc08_DrmFileMgrPositive_GetFileHandler_03(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/FightGuiIF.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -1142,7 +1141,7 @@ CATCH:
 
 bool tc09_DrmFileMgrPositive_FileAPI_01(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -1318,7 +1317,7 @@ CATCH:
 
 bool tc09_DrmFileMgrPositive_FileAPI_02(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/8SPXfqc6iL.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/8SPXfqc6iL.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -1494,7 +1493,7 @@ CATCH:
 
 bool tc09_DrmFileMgrPositive_FileAPI_03(void)
 {
-	const char *pDCF = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/FightGuiIF.tpk");
+	const char *pDCF = TEST_DATA_DIR "/DCF/FightGuiIF.tpk";
 	int nRet = TADC_SUCCESS;
 
 	DrmFileMgr* pDrmFileMgr = NULL;
@@ -1831,7 +1830,7 @@ bool tc13_DTappsInstallLicense_01(void)
 {
 	printf("tc13_DTappsInstallLicense_01() -------- Started! \n");
 
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro");
+	const char *pFirstRo = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.ro";
 
 	auto buf = _read_ro_file(pFirstRo);
 
@@ -1849,7 +1848,7 @@ bool tc13_DTappsInstallLicense_02(void)
 {
 	printf("tc13_DTappsInstallLicense_02() -------- Started! \n");
 
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/8SPXfqc6iL-1.0.0.ro");
+	const char *pFirstRo = TEST_DATA_DIR "/RO/8SPXfqc6iL-1.0.0.ro";
 
 	auto buf = _read_ro_file(pFirstRo);
 
@@ -1867,7 +1866,7 @@ bool tc13_DTappsInstallLicense_03(void)
 {
 	printf("tc13_DTappsInstallLicense_03() -------- Started! \n");
 
-	const char *pFirstRo = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/FightGuiIF-1.0.0.ro");
+	const char *pFirstRo = TEST_DATA_DIR "/RO/FightGuiIF-1.0.0.ro";
 
 	auto buf = _read_ro_file(pFirstRo);
 
@@ -1944,10 +1943,10 @@ tc_local_01_drm_tizen_full_test_p(void)
 
     unsigned char duid[33] = {0,};
     const char* cid = "38EIfBurLJ-1.0.2";
-    const char* ro_template_path = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/RO/38EIfBurLJ-1.0.2.ro_template");
+    const char* ro_template_path = TEST_DATA_DIR "/RO/38EIfBurLJ-1.0.2.ro_template";
 
-    const char* encrypted_file_path = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DCF/38EIfBurLJ.tpk");
-    const char* plaintext_file_path = tzplatform_mkpath(TZ_SYS_DATA,"drm_test/DecryptedApp/38EIfBurLJ_dec.tpk");
+    const char* encrypted_file_path = TEST_DATA_DIR "/DCF/38EIfBurLJ.tpk";
+    const char* plaintext_file_path = TEST_DATA_DIR "/DecryptedApp/38EIfBurLJ_dec.tpk";
     const char* decrypted_file_path = "/tmp/38EIfBurLJ.tpk";
 
     int identical = DRMTEST_NOTIDENTICAL;

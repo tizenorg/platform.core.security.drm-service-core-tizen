@@ -2,7 +2,7 @@
 
 Name:       drm-service-core-tizen
 Summary:    Tizen Application DRM library (Shared Object)
-Version:	0.3.9
+Version:    0.3.9
 Release:    0
 Group:      System/Security
 License:    Flora-1.1 and Apache-2.0
@@ -13,6 +13,11 @@ BuildRequires:  pkgconfig(db-util)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(cryptsvc)
 BuildRequires:  pkgconfig(libtzplatform-config)
+
+%global bin_dir %{?TZ_SYS_BIN:%TZ_SYS_BIN}%{!?TZ_SYS_BIN:%_bindir}
+%global ro_data_dir %{?TZ_SYS_RO_SHARE:%TZ_SYS_RO_SHARE/tizen_app_drm}%{!?TZ_SYS_RO_SHARE:%_datadir/tizen_app_drm}
+%global test_data_dir %{?TZ_SYS_RO_SHARE:%TZ_SYS_RO_SHARE/drm_test}%{!?TZ_SYS_RO_SHARE:%_datadir/drm_test}
+%global db_dir %{?TZ_SYS_DB:%TZ_SYS_DB}%{!?TZ_SYS_DB:/opt/dbspace}
 
 %description
 Description: Tizen Application DRM library (Shared Object)
@@ -39,69 +44,57 @@ Description: Tizen Applicationi DRM library (test)
 %setup -q
 
 %build
+export CFLAGS="$CFLAGS -DTIZEN_DEBUG_ENABLE"
+export CXXFLAGS="$CXXFLAGS -DTIZEN_DEBUG_ENABLE"
+export FFLAGS="$FFLAGS -DTIZEN_DEBUG_ENABLE"
+export LDFLAGS="$LDFLAGS -Wl,--rpath=%{_litdir}"
+
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
 %cmake .  -DFULLVER=%{version} \
-         -DMAJORVER=${MAJORVER} \
+        -DMAJORVER=${MAJORVER} \
 %if 0%{?test_build_drm_service_core_tizen}
-         -DBUILD_TEST_DRM_SERVICE_CORE_TIZEN=1 \
+        -DBUILD_TEST_DRM_SERVICE_CORE_TIZEN=1 \
+        -DTEST_DATA_DIR=%{test_data_dir} \
 %endif
-         -DPREFIX=%{_prefix} \
-         -DEXEC_PREFIX=%{_exec_prefix} \
-         -DLIBDIR=%{_libdir} \
-         -DBINDIR=%{_bindir} \
-         -DINCLUDEDIR=%{_includedir} \
-         -DTZ_SYS_SHARE=%TZ_SYS_SHARE \
-         -DTZ_SYS_BIN=%TZ_SYS_BIN \
-         -DTZ_SYS_DATA=%TZ_SYS_DATA \
-         -DTZ_SYS_ETC=%TZ_SYS_ETC \
-         -DTZ_SYS_RO_WRT_ENGINE=%TZ_SYS_RO_WRT_ENGINE \
-         -DTZ_SYS_DB=%TZ_SYS_DB \
-         -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}%{!?build_type:RELEASE} \
-         -DCMAKE_INSTALL_PREFIX=%{_prefix}
+        -DBIN_DIR=%{bin_dir} \
+        -DRO_DATA_DIR=%{ro_data_dir} \
+        -DDB_DIR=%{db_dir} \
+        -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}%{!?build_type:RELEASE}
 
-make
+make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}%{TZ_SYS_SHARE}/license/%{name}
-cp  %{_builddir}/%{name}-%{version}/LICENSE.* %{buildroot}%{TZ_SYS_SHARE}/license/%{name}
 %make_install
 
 %post
-/bin/rm -f /etc/ld.so.cache
+%{bin_dir}/rm -f /etc/ld.so.cache
 /sbin/ldconfig
-%{_bindir}/drm_tizen_initialize
-chsmack -a "org.tizen.tsefl" %{TZ_SYS_DB}/.dtapps.db*
-chown :5000 %{TZ_SYS_DB}/.dtapps.db*
-chmod 660 %{TZ_SYS_DB}/.dtapps.db*
+%{bin_dir}/drm_tizen_initialize
+chsmack -a "org.tizen.tsefl" %{db_dir}/.dtapps.db*
+chown :5000 %{db_dir}/.dtapps.db*
+chmod 660 %{db_dir}/.dtapps.db*
 
 %postun -p /sbin/ldconfig
 
-%clean
-rm -rf %{buildroot}
-
 %files
-%manifest drm-service-core-tizen.manifest
-%defattr(-,root,root,-)
-%{_libdir}/libdrm-service-core-tizen.so*
-%{_bindir}/drm_tizen_initialize
-%{TZ_SYS_SHARE}/license/%{name}/*
-%{TZ_SYS_SHARE}/tizen_app_drm/root_certs/ro_root_cert.pem
+%manifest %{name}.manifest
+%license LICENSE.*
+%{_libdir}/lib%{name}.so.*
+%{bin_dir}/drm_tizen_initialize
+%{ro_data_dir}/root_certs/ro_root_cert.pem
 
 %files devel
-%defattr(-,root,root,-)
-%{_libdir}/pkgconfig/drm-service-core-tizen.pc
+%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/lib%{name}.so
 %{_includedir}/drm-tizen/drm-tizen-apps.h
 %{_includedir}/drm-tizen/drm-tizen-error.h
-%exclude %{_includedir}/drm-tizen/drm-tizen-mid.h
 
 %if 0%{?test_build_drm_service_core_tizen}
 %files test
-#%defattr(-,root,root,-)
-%{_bindir}/drm_test_tizen
-%{TZ_SYS_DATA}/drm_test/RO/*
-%{TZ_SYS_DATA}/drm_test/DCF/*
-%{TZ_SYS_DATA}/drm_test/DecryptedApp/*
-%{TZ_SYS_DATA}/drm_test/Key/*
-%{TZ_SYS_SHARE}/tizen_app_drm/root_certs/ro_test_root_ca.pem
+%{bin_dir}/drm_test_tizen
+%{test_data_dir}/RO
+%{test_data_dir}/DCF
+%{test_data_dir}/DecryptedApp
+%{test_data_dir}/Key
+%{ro_data_dir}/root_certs/ro_test_root_ca.pem
 %endif

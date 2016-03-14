@@ -20,7 +20,7 @@
 
 #define RIURL "http://appdrm.test.com/"
 
-#define RO_ISSUER_SIGNER_KEY_FILE tzplatform_mkpath(TZ_SYS_DATA, "drm_test/Key/ro_test_signer.key")
+#define RO_ISSUER_SIGNER_KEY_FILE TEST_DATA_DIR "/Key/ro_test_signer.key"
 
 #define STR_PLACE_HOLDER_CID        "PLACE_HOLDER_FOR_CID"
 #define STR_PLACE_HOLDER_DUID       "PLACE_HOLDER_FOR_DUID"

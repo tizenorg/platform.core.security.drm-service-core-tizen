@@ -1,7 +1,7 @@
-prefix=@PREFIX@
-exec_prefix=@EXEC_PREFIX@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
 libdir=@LIB_INSTALL_DIR@
-includedir=@INCLUDEDIR@
+includedir=@INCLUDE_INSTALL_DIR@
 
 Name: drm-service-core-tizen
 Description: Tizen Application DRM Plugin
