@@ -177,7 +177,7 @@ int	TADC_GetResponseRO(unsigned char *inBuffer, T_ROACQ_INFO *t_ROAcqInfo, T_RO 
 int TADC_GetResponseROInfo(LPBYTE pszXML,  T_RO *t_RO);
 int	TADC_GetHashReqID(unsigned char *inBuffer, unsigned char *hashReqID);
 int	TADC_GetCEK(T_DEVICE_INFO *t_DeviceInfo, T_RO *t_RODB, T_DRM_HEADER *t_DRMHeader );
-int TADC_DecryptBlock(char* pbBuffer, int nSize, T_DRM_HEADER *t_DRMHeader);
+int TADC_DecryptBlock(char* pbBuffer, int nSize, const T_DRM_HEADER *t_DRMHeader);
 int	TADC_VerifyROSignature(IN LPBYTE pszXML);
 DWORD TADC_GetLastError(void);
 int TADC_MEMFree_RO(T_RO *t_ro);
