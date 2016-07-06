@@ -70,8 +70,8 @@ make %{?_smp_mflags}
 %{bin_dir}/rm -f /etc/ld.so.cache
 /sbin/ldconfig
 %{bin_dir}/drm_tizen_initialize
-chsmack -a "org.tizen.tsefl" %{db_dir}/.dtapps.db*
-chown :5000 %{db_dir}/.dtapps.db*
+chsmack -a "System" %{db_dir}/.dtapps.db*
+chown :users %{db_dir}/.dtapps.db*
 chmod 660 %{db_dir}/.dtapps.db*
 
 %postun -p /sbin/ldconfig
